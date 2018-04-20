@@ -1,0 +1,22 @@
+body{
+	background-color:#CDCDCD;
+}
+.svg-chart-cntnr{
+	background-color:#EFEFEF;
+	border:1px #050505 solid;
+	border-radius:5px;
+	padding:20px;
+	box-shadow:4px 4px 8px #050505;
+}
+#mainCntnr{
+	margin-top:65px;
+}
+svg{
+	display:block;
+	/*background-color:#CDCDCD;*/
+	border:1px #FFFFFF solid;
+	box-shadow:3px 3px 6px #050505;
+	min-width:100px;
+	min-height:100px;
+	margin-top:20px;
+}
