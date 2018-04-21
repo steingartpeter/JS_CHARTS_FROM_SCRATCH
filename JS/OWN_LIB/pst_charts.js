@@ -167,7 +167,7 @@ function a0020(svgElmnt,txtId){
 //</SF>
 	
 	//<nn>
-	// Ha nem jött táoló SVG elem, akkor leáll a program.
+	// Ha nem jött tároló SVG elem, akkor leáll a program.
 	//</nn>
 	if(svgElmnt === undefined){
 		console.error("HIBA -> a tartalmazó SVG elem nem jött meg paraméterként!");
@@ -223,6 +223,9 @@ function a0030(svgElmnt,txtId,txt){
 //-×
 //</SF>
 	
+	//<nn>
+	// A hiányzó paramétereket inicializáljuk vmi alapértelmezett értékkel.
+	//</nn>
 	if(svgElmnt === undefined){
 		console.error("Nem érkezett tartalmazó objektum hivatkozás, a program leáll.");
 		return;
