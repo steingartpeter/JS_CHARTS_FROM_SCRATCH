@@ -74,6 +74,7 @@ function a0010(){
 //-×
 //</SF>
 	
+	
 	//<nn>
 	//...
 	//</nn>
@@ -104,6 +105,7 @@ function a0010(){
 	// Hozzáadjuk a teszt szöveget.
 	//</nn>
 	PSTCG.ADD_TEXT(svg);
+	
 	
 	//<nn>
 	// Hozzáadjuk a háttér hálót.
@@ -667,6 +669,9 @@ function a0060(sclMin, sclMax, domMin, domMax){
 //-×
 //</SF>
 	
+	//<nn>
+	//...
+	//</nn>
 	if(sclMin == undefined){
 		sclMin = 0;
 	}
@@ -719,7 +724,28 @@ function a0060(sclMin, sclMax, domMin, domMax){
 	return scl;
 }
 
-
+function a0070(svgElmnt, data, type, sclX, sclY){
+//<SF>
+// Létrehozva: 2018. ápr. 24.<br>
+// Szerző:  Balise Pascal
+// Az adatokat reprezentáló SVG obketumok legenrálása.<br>
+// PARAMÉTEREK:
+//×-
+// @-- @param svgElmnt = az grafikont tároló SVG tag -@
+// @-- @param data = az adatokat tároló tömb (min 2 dimenziós >x, és y tengely adatai. -@
+// @-- @param type = az grafikont tároló SVG tag -@
+// @-- @param sclX = az X tengely skálázó objektuma -@
+// @-- @param sclX = az Y tengely skálázó objektuma -@
+//-×
+//MÓDOSÍTÁSOK:
+//×-
+// @-- ... -@
+//-×
+//</SF>
+	
+	
+	
+}
 
 
 
