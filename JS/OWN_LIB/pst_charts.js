@@ -37,6 +37,7 @@ $(function(){
 	FUNCTION_SETUP();
 	
 	$("#fst-chrt-gen").click(PSTCG.GEN_STARTER_CHART);
+	$("#dta-test").click(PSTCG_DC.getTestData);
 	
 });
 

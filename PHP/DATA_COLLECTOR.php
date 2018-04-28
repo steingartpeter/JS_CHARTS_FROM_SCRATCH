@@ -1,8 +1,29 @@
 <?php
-
+#moddoc:
+//<M>
+//×-
+//@-FILENÉV   : JS_CHARTS_FROM_SCRATCH - DATA_COLLECTOR.php-@
+//@-SZERZŐ    : AX07057-@
+//@-LÉTREHOZVA:  2018. ápr. 23.-@
+//@-FÜGGŐSÉGEK:
+//×-
+// @-- MYSQL_DB_HLR.php-@
+// @-- P_CONSTS.php-@
+//-×
+//-@
+//@-LEÍRÁS    :
+//Ez a PHP kód azt a feladatot látja el ...
+//-@
+//@-MÓDOSÍTÁSOK :
+//×-
+// @-- ... -@
+//-×
+//-@
+//-×
+//</M>
     
 
-    //$dir = $_REQUEST['ajaxDir'];
+    include_once $_SERVER['DOCUMENT_ROOT'] . '/JS_CHARTS_FROM_SCRATCH/PHP/MYSQL_DB_HLR.php';
 
     if(strpos(array_keys($_REQUEST)[0],'":"') > 0){
         
@@ -38,7 +59,9 @@
         case "test001":
             testFunc001();
         break;
-        
+        case "phpTest01":
+            getTstData001();
+        break;
         default:
             defFunc();
         break;
@@ -100,7 +123,29 @@
         echo json_encode($dataArr,JSON_UNESCAPED_UNICODE);
     }
     
-    
+    function getTstData001(){
+    //<SF>
+    // LÉTREHOZVA:  2018. ápr. 28.<br>
+    // SZERZŐ:           blaise
+    // LEÍRÁS<br>
+    // PARAMÉTEREK:
+    //×-
+    // @-- @param ... = ... -@
+    //-×
+    //MÓDOSTÁSOK:
+    //×-
+    // @-- ... -@
+    //-×
+    //</SF>
+        $dbHlr = new DB_HLR();
+        
+        $c = $dbHlr->getCon();
+        
+        $d = $dbHlr->getTestData001();
+        
+        echo json_encode($d,JSON_UNESCAPED_UNICODE);
+        
+    }
     
 
 ?>
