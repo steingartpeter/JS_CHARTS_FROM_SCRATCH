@@ -744,6 +744,13 @@ function a0070(svgElmnt, data, type, sclX, sclY){
 //-×
 //</SF>
 	
+	if(type === undefined || type === ""){
+		type = "BAR";
+	}
+
+	if(data === undefined){
+		data = PSTCG_CNSTS.DEFS.TSTDATA01;
+	}
 	
 	
 }
