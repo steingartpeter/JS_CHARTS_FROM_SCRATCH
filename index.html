@@ -8,6 +8,7 @@
 	<script type="text/javascript" src="/JS_CHARTS_FROM_SCRATCH/JS/FRMWRKS/BOOTSTRAP/bootstrap337/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/JS_CHARTS_FROM_SCRATCH/JS/OWN_LIB/consts.js"></script>
 	<script type="text/javascript" src="/JS_CHARTS_FROM_SCRATCH/JS/OWN_LIB/dta_collector.js"></script>
+	<script type="text/javascript" src="/JS_CHARTS_FROM_SCRATCH/JS/OWN_LIB/graph.js"></script>
 	<script type="text/javascript" src="/JS_CHARTS_FROM_SCRATCH/JS/OWN_LIB/pst_charts.js"></script>
 	
 	<!-- CSS SOURCE FILEOK LINKJEI -->
@@ -57,6 +58,165 @@
 				<button class="btn btn-primary" id="dta-test">Data reader test</button>
 			</div>
 		</div>
+		<hr/>
+		<div class="row">
+		<div class="col-sm-12">
+		<h2>A CHART objektum szerkezete</h2>
+			<ol>
+				<li>
+					<h1>CHART OBJEKTUM</h1>
+					<ol>
+					
+					<!--  META -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">META</h3><br>
+						<p class="docm"> A teljes chart-ot leíró jellemzők kerülnek ide, pl méret, id, stb. </p>
+						<ol>
+							<li>
+								<h4>cntnrId:</h4>
+								<span class="docm">A teljes chart SVG szülőobjektumát tároló HTML objektum ID-je, általában ez egy DIV elem ID-je.</span>
+							</li>
+							<li>
+								<h4>chartId:</h4>
+								<span class="docm">A teljes chart SVG kívánt ID-je, ha nem adjuk meg, akkor kap egy pst-chrt-[RANDOM 0-1000] ID-t.</span>
+							</li>
+							<li>
+								<h4>fill:</h4>
+								<span class="docm">Az SVG kitöltő színének hex kódja, alapértelmezésben: #A5A5A5.</span>
+							</li>
+							<li>
+								<h4>size:</h4>
+								<span class="docm">Az SVG objektum előre definiáűlt méretazonosítója, lehetséges értékei</span>
+								 <table class="table table-striped table-bordered">
+								 <tr><td>S</td><td> 200x200 px </td></tr>
+								 <tr><td>M</td><td> 400x400 px </td></tr>
+								 <tr><td>L</td><td> 600x600 px </td></tr>
+								 <tr><td>XL</td><td>800x800 px </td></tr>
+								</table>
+							</li>
+							<li>
+								<h4>title:</h4>
+								<span class="docm">Az majdani chart objektum címe.</span>
+							</li>
+						</ol>
+					</li>
+					
+					<!--  SVGDEFS -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">SVGDEFS</h3><br>
+						<p class="docm"> Ezek láthatatlan, de a látható elemek megjelenését befolyásolo SVG - DEFS elemek. Mint például a linear gradient elem.</p>
+						<ol>
+							<li>
+								<h4>id</h4>
+								<p class="docm"> A szokásos ID elem, hogy el legyen nevzeve az elemeünk.</p>
+							</li>
+							<li>
+								<h4>grads</h4>
+								<p class="docm"> Ez egy érdekes elem, egy tőmb. Ebben tároljuk a gradient elemek információit hordozó - névtelen - 
+								JSON objektumokat. A JSON objektumok leírása, linearGradient-hez:</p>
+								<ul>
+									<li><b>id:</b> a szokásos, hogy neve legyen az elemünknek</li>
+									<li><b>x1:</b> Az x kezdőkoordináta a gradienthez</li>
+									<li><b>y1:</b> Az y kezdőkoordináta a gradienthez</li>
+									<li><b>x2:</b> Az x végkoordináta a gradienthez</li>
+									<li><b>y2:</b> Az y végkoordináta a gradienthez</li>
+									<li><b>stop1</b> A gradient elem kezdetének leírása, összetett objektum:
+										<ol>
+											<li><b>offset: </b> A gradient indulásásnak eltolásaa kezdőponthoz képest (%)</li>
+											<li><b>stop-color: </b> A gradient színe a kezdőpontban</li>
+										</ol>
+									</li>
+									<li><b>stop2</b> A gradient következő/utolsó elemének leírása, összetett objektum:
+										<ol>
+											<li><b>offset: </b> A gradient indulásásnak eltolásaa kezdőponthoz képest (%)</li>
+											<li><b>stop-color: </b> A gradient színe a ebben a pontban</li>
+										</ol>
+									</li>
+								</ul>
+							</li>
+						</ol>
+					</li>
+					
+					<!--  DIMS -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">DIMS</h3><br>
+						<p class="docm"> A chart legalapvetőb megjelenési leírói, szélesség, magasság, stb. </p>
+						<ol>
+						
+						
+						</ol>
+					</li>
+					<!--  END OF DIMS -->
+					
+					<!--  BGRECT -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">BGRECT</h3><br>
+						<p class="docm"> A chart hatterét egy SVG rect-el oldjuk meg, itt találhatóak ennek a leírói. </p>
+						<ol>
+						
+						
+						</ol>
+					</li>
+					<!--  END OF BGRECT -->
+					
+					<!--  BGGRID -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">BGGRID</h3><br>
+						<p class="docm"> Ez egy opcionális elem, a background grid, a háttérben léátható rács, aminek a szerepe, 
+						hogy megkönnyítse az adatok leovasását a tengelyek segítségével.. </p>
+						<ol>
+						
+						
+						</ol>
+					</li>
+					<!--  END OF BGGRID -->
+					
+					<!--  AXESS -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">AXESS</h3><br>
+						<p class="docm"> A tegelyek adatai, ahol az értékeket, kategóriákat megjelenítjük. Jelenleg egyetlen 
+						&quot;axs&qot; nevű tömböt tartalmaz, amibe lehet pakolni tetszőleges számú tengely objektumot.</p>
+						<ol>
+						
+						
+						</ol>
+					</li>
+					<!--  END OF AXESS -->
+					
+					<!--  DATA -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">DATA</h3><br>
+						<p class="docm"> A legfontosabb elem, az adat. Három tömbből áll, az elsőben az X tengely, a
+						másodikban az Y tengely feliratait, a harmadikban magát az adatsort adhatjuk meg.</p>
+						<ol>
+						
+						
+						</ol>
+					</li>
+					<!--  END OF DATA -->
+					
+					<!--  FUNCS -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">FUNCS</h3><br>
+						<p class="docm">A chartot működtető függvények, amitet tároló objektumokban jelenítek meg, és ezeknek az objektumoknak lesz
+						függvénytartalma is, tipikusan itt vannak a skálázó objektumok, amik az adatokat reprezentáló grafikus elemekt, a grafikon
+						képernyő dimenziójára képezik le.</p>
+						<ol>
+						
+						
+						</ol>
+					</li>
+					<!--  END OF FUNCS -->
+					
+					</ol>
+				</li>
+			</ol>
+		</div>
+		</div>
+		
+		
+		
+		
     </div>
 </body>
 </html>

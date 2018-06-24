@@ -90,7 +90,21 @@ svg{
 	border-radius:6px;
 	padding: 4px;
 }
-
+.docm{
+	font-family:"courier new";
+	background-color:#DDDDFF;
+	border:1px dotted #4141AA;
+	padding:4px;
+	margin-bottom:10px;
+	box-shadow:2px 2px 3px #454566;
+}
+h4{
+	font-weight: bold;
+	text-decoration: underline;
+}
+.doc-closer{
+	cursor: s-resize;
+}
 
 
 

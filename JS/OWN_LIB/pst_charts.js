@@ -799,3 +799,28 @@ function a0070(svgElmnt, data, type, sclX, sclY) {
 	svgElmnt.append(drawObjs);
 
 }
+
+
+
+
+
+function closeNextOL(t){
+//<SF>
+// LÉTREHOZVA: 2018. jún. 24.<br>
+// SZERZŐ:    blaise<br>
+// A dokumentációs bénázások becsukásához...<br>
+// PARAMÉTEREK:
+//×-
+// @-- @param ... = ... -@
+//-×
+//MÓDOSÍTÁSOK:
+//×-
+// @-- ... -@
+//-×
+//</SF>
+	$(t).parent().children("ol").slideToggle();
+	
+}
+
+
+
