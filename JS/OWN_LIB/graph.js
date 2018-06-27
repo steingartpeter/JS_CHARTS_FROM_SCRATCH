@@ -91,6 +91,14 @@ PSTCG.CHART = function(id){
 					'stop-color':'#858585'
 				}
 			}
+		],
+		filters:[
+			{
+				id:"fltr-blur01",
+				type:"feGaussianBlur",
+				inElm:"SourceGraphic",
+				stdDeviation:2
+			}
 		]
 	};
 	
@@ -118,6 +126,8 @@ PSTCG.CHART = function(id){
 	//-×
 	//</nn>
 	this.BGRECT = {
+		g:{},
+		id:"",
 		x:0+this.DIMS.chrtMrgL,
 		y:0+this.DIMS.chrtMrgT,
 		width:this.DIMS.chrtBGRectDims[0],
@@ -181,9 +191,39 @@ PSTCG.CHART = function(id){
 	
 	this.FUNCS = {
 		xScl01:{
-			
+			minVal:0,
+			maxVal:400,
+			minDom:0,
+			maxDom:1000,
+			extVal:function(){return maxVal-minVal;},
+			extDom:function(){return maxDom-minDom;},
+			getVal:function(v){
+				if (v >= this.maxDom) {
+					return this.maxVal;
+				} else if (v <= this.minDom) {
+					return this.minVal;
+				} else {
+					return (v - this.minDom) * (this.extVal / this.extDom);
+				}
+			}
 		},
-		yScl01:function(){}
+		yScl01:{
+			minVal:0,
+			maxVal:400,
+			minDom:0,
+			maxDom:1000,
+			extVal:function(){return maxVal-minVal;},
+			extDom:function(){return maxDom-minDom;},
+			getVal:function(v){
+				if (v >= this.maxDom) {
+					return this.maxVal;
+				} else if (v <= this.minDom) {
+					return this.minVal;
+				} else {
+					return (v - this.minDom) * (this.extVal / this.extDom);
+				}
+			}
+		}
 	}
 	
 	//<nn>
@@ -296,7 +336,249 @@ PSTCG.CHART = function(id){
 		
 	}
 	
+	this.setBGRctColors = function(col0, col1){
+	//<SF>
+	// Létrehozva: 2018. jún. 27.<br>
+	// Szerző:  Balise Pascal
+	// Mindig az aktuális tesztfüggvény...<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param ... = ... -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		//<nn>
+		// Kezeljük a hiányzó paraméterek esetét.
+		//</nn>
+		if(col0 === undefined){
+			col0 = "#525252";
+		}
+		
+		if(col1 === undefined){
+			col1 = "#E5E5E5";
+		}
+		
+		//<nn>
+		// megszerezzük az első linGrad elem ID-jét
+		//</nn>
+		var bgGrdId = this.SVGDEFS.grads[0].id;
+		
+		//<nn>
+		// Átállítjuk a színátmenet szélső értékeit a paraméterben kapott színekre.
+		//</nn>
+		var stp1 = $("#"+bgGrdId+">stop").eq(0);
+		stp1.attr({"stop-color":col0});
+		
+		var stp2 = $("#"+bgGrdId+">stop").eq(1);
+		stp2.attr({"stop-color":col1});
+	}
+	
+	this.render = function(prmObj){
+	//<SF>
+	// Létrehozva: 2018. jún. 27.<br>
+	// Szerző:  Balise Pascal
+	// LEÍRÁS<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param prmObj = paraméter objketuzm, több elemből! -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+			
+		//<nn>
+		// Levesszük az oldalról a konténer objektum egy referenciáját.
+		//</nn>
+		var cntnr = $("#"+this.META.cntnrId);
+		
+		
+		//<nn>
+		//+-------------------------------------------------------------------+
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//|          ***********   ALAP SVG OBJKETUM    ***********           |
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//+-------------------------------------------------------------------+
+		//</nn>
+		
+		//<nn>
+		// Összeállítjuk az SVG objektumot, amit majd ha készre faragjuk, odatesszük a konténerobjektumba!
+		//</nn>
+		var svg = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'svg'));
+		console.log("render - svg");
+		console.log(svg);
+		
+		svg.attr({
+			id : this.META.chartId,
+			fill : this.META.fill,
+			size : this.META.size,
+			title : this.META.title,
+			width : this.DIMS.svgW,
+			height : this.DIMS.svgH
+		});
+		
+		//<nn>
+		//+-------------------------------------------------------------------+
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//|            ***********   DEFS SVG ELEMEK    ***********           |
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//+-------------------------------------------------------------------+
+		//</nn>
+		var defs = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'defs'));
+		defs.attr({
+			id : this.SVGDEFS.id
+		});
+		
+		//<nn>
+		// Egy FOR ciklussal bejárjuk az alapobjektum GRADS tömbét, és az ottan JSON objektumokat SVG elemekké alakítjuk.
+		//</nn>
+		for(var ix1 = 0; ix1<this.SVGDEFS.grads.length; ix1++){
+			//<nn>
+			// Az aktuális linearGradient feltöltse.
+			//</nn>
+			var grdFill = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'linearGradient'));
+			grdFill.attr({
+				"id" : this.SVGDEFS.grads[ix1].id,
+				"x1" : this.SVGDEFS.grads[ix1].x1,
+				"x2" : this.SVGDEFS.grads[ix1].x2,
+				"y1" : this.SVGDEFS.grads[ix1].y1,
+				"y2" : this.SVGDEFS.grads[ix1].y2
+			});
+			//<nn>
+			// Az aktuális linGrad STOP-jainak feltöltése...
+			//</nn>
+			var stp1 = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'stop'));
+			stp1.attr({
+				"offset" : this.SVGDEFS.grads[ix1].stop1.offset,
+				"stop-color" : this.SVGDEFS.grads[ix1].stop1["stop-color"]
+			});
+			var stp2 = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'stop'));
+			stp2.attr({
+				"offset" : this.SVGDEFS.grads[ix1].stop2.offset,
+				"stop-color" : this.SVGDEFS.grads[ix1].stop2["stop-color"]
+			});
+			
+			//<nn>
+			// A stop-okat a linGradhoz adjuk
+			//</nn>
+			grdFill.append(stp1);
+			grdFill.append(stp2);
+			
+			//<nn>
+			// A linGrad-ot a DEFS-hez adjuk
+			//</nn>
+			defs.append(grdFill);
+		}
+		
+
+		//<nn>
+		// Egy FOR ciklussal bejárjuk az alapobjektum FILTERS tömbét, és az ottani JSON objektumokat SVG elemekké alakítjuk.
+		//</nn>
+		for(var ix1 = 0; ix1<this.SVGDEFS.filters.length; ix1++){
+			//<nn>
+			// A filter objektumok SVG-vé alakítása.
+			//</nn>
+			var blrs = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'filter'));
+			blrs.attr({
+				"id" : this.SVGDEFS.filters[ix1].id,
+			});
+			
+			//<nn>
+			// A filterbe pakoljuk az első alapértelmezett BLUR-t.
+			//</nn>
+			var fltrTag = $(document.createElementNS(PSTCG_CNSTS.SVGNS, this.SVGDEFS.filters[ix1].type));
+			fltrTag.attr({
+				"in" : this.SVGDEFS.filters[ix1].inElm,
+				"stdDeviation" : this.SVGDEFS.filters[ix1].stdDeviation
+			});
+			
+			//<nn>
+			// A blur-t a FILTER-be tesszük.
+			//</nn>
+			blrs.append(fltrTag);
+			
+			//<nn>
+			// A Filter-t a DEFS-be tesszük
+			//</nn>
+			defs.append(blrs);
+		}
+
+		//<nn>
+		// Hozzáadjuk a DEFS tag-et.
+		//</nn>
+		svg.append(defs);
+		
+		
+		
+		//<nn>
+		//+-------------------------------------------------------------------+
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//|            ***********   HÁTTÉR TÉGLALAP    ***********           |
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//+-------------------------------------------------------------------+
+		//</nn>
+		
+		//<nn>
+		// A hattér négyzet létrehozása egy layer group-pal, és egy rect-el.
+		//</nn>
+		var bgRctGrp = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		var bgRect = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'rect'));
+		
+		bgRctGrp.attr({id:"bckkgrnd-layer"});
+		bgRect.attr({
+			id : this.BGRECT.id,
+			x : this.BGRECT.x,
+			y : this.BGRECT.y,
+			height : this.BGRECT.height,
+			width : this.BGRECT.width,
+			//fill : this.BGRECT.fill
+			fill : "url(#" + this.SVGDEFS.grads[0].id + ")"
+		});
+		
+		bgRctGrp.append(bgRect);
+		svg.append(bgRctGrp);
+		
+		//<nn>
+		// Az összeállított SVG objektumot bedobjuk a konténerbe.
+		//</nn>
+		cntnr.append(svg);
+		
+	}
+	
+	this.test001 = function(col0, col1){
+	//<SF>
+	// Létrehozva: 2018. jún. 27.<br>
+	// Szerző:  Balise Pascal
+	// Mindig az aktuális tesztfüggvény...<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param ... = ... -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		if(col0 === undefined){
+			
+		}
+		
+		var bgGrdId = this.SVGDEFS.grads[0].id;
+		var stp1 = $("#"+bgGrdId+">stop").eq(0);
+		stp1.attr({"stop-color":col0});
+		
+		var stp2 = $("#"+bgGrdId+">stop").eq(1);
+		stp2.attr({"stop-color":col1});
+	}
+	
 };
+
 
 
 

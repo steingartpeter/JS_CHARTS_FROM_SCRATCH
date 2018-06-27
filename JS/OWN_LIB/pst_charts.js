@@ -38,6 +38,7 @@ $(function() {
 
 	$("#fst-chrt-gen").click(PSTCG.GEN_STARTER_CHART);
 	$("#dta-test").click(PSTCG_DC.getTestData);
+	$("#jsn-tester").click(testJSONChart);
 
 });
 
@@ -822,5 +823,25 @@ function closeNextOL(t){
 	
 }
 
-
+function testJSONChart(){
+//<SF>
+// Létrehozva: 2018. jún. 27.<br>
+// Szerző:  Balise Pascal
+// LEÍRÁS<br>
+// PARAMÉTEREK:
+//×-
+// @-- @param ... = ... -@
+//-×
+//MÓDOSÍTÁSOK:
+//×-
+// @-- ... -@
+//-×
+//</SF>
+	
+	console.log("HIVAS - OK");
+	
+	var c = new PSTCG.CHART();
+	c.META.cntnrId = 'chrt0002';
+	c.render();
+}
 
