@@ -37,6 +37,7 @@ PSTCG.CHART = function(id){
 //-×
 //</SF>
 
+	var self = this;
 	
 	if(id === undefined){
 		id = 'pst-chrt'+Math.floor(Math.random()*1000);
@@ -145,7 +146,62 @@ PSTCG.CHART = function(id){
 	this.BGGRID = {
 		grpId:"bg-grid01",
 		'x-lines':[],
-		'y-lines':[]
+		'y-lines':[],
+		baseSetup:function(){
+			var lineColor = "#CDCDCD";
+			var xLnNr = self.DATA.vals01.length;
+			var yLnNr = xLnNr;
+			var width = self.DIMS.svgW - self.DIMS.chrtMrgL - self.DIMS.chrtMrgR;
+			var height = self.DIMS.svgH - self.DIMS.chrtMrgB - self.DIMS.chrtMrgT;
+			var xTrnslt = 0;
+			var yTrnslt = 0;
+
+			//<nn>
+			// A rácsunk x osztásköze.
+			//</nn>
+			var xStep = width / (xLnNr + 1);
+
+			//<nn>
+			// A rácsunk y osztásköze.
+			//</nn>
+			var yStep = height / (yLnNr + 1);
+
+			//<nn>
+			// Egy for ciklussal meggeneráljuk a háló függőleges vonalait.
+			//</nn>
+			for (var ix1 = 0; ix1 < xLnNr; ix1++) {
+				var ln = $(document.createElementNS(PSTCG_CNSTS.SVGNS, "line"));
+				ln.attr({
+					"id" : "grd-x" + (ix1 + 1),
+					"x1" : 0 + (ix1 + 1) * xStep + self.DIMS.chrtMrgL,
+					"y1" : 0 + self.DIMS.chrtMrgT,
+					"x2" : 0 + (ix1 + 1) * xStep + self.DIMS.chrtMrgL,
+					"y2" : height + self.DIMS.chrtMrgT,
+					"stroke" : lineColor,
+					"stroke-width" : 1,
+					"opacity" : .8
+				});
+				this["x-lines"].push(ln);
+			}
+
+			//<nn>
+			// Egy for ciklussal meggeneráljuk a háló vízszintes vonalait.
+			//</nn>
+			for (var ix1 = 0; ix1 < yLnNr; ix1++) {
+				var ln = $(document.createElementNS(PSTCG_CNSTS.SVGNS, "line"));
+				ln.attr({
+					"id" : "grd-y" + (ix1 + 1),
+					"x1" : 0 + self.DIMS.chrtMrgL,
+					"y1" : 0 + (ix1 + 1) * yStep + self.DIMS.chrtMrgT,
+					"x2" : 0 + self.DIMS.chrtMrgL + width,
+					"y2" : 0 + (ix1 + 1) * yStep + self.DIMS.chrtMrgT,
+					"stroke" : lineColor,
+					"stroke-width" : 1,
+					"opacity" : .8
+				});
+				this['y-lines'].push(ln);
+			}
+		}
 	}
 	
 	this.AXESS = {
@@ -184,43 +240,45 @@ PSTCG.CHART = function(id){
 	}
 	
 	this.DATA = {
-		xScrptn:[],
-		yScrptn:[],
-		vals01:[]
+		xScrptn:["1",'2','3','4','5'],
+		yScrptn:["200","400","400","800",'1000'],
+		vals01:[180,450,610,500,750]
 	}
 	
 	this.FUNCS = {
 		xScl01:{
+			name:"bscX",
 			minVal:0,
 			maxVal:400,
 			minDom:0,
 			maxDom:1000,
-			extVal:function(){return maxVal-minVal;},
-			extDom:function(){return maxDom-minDom;},
+			extVal:function(){return this.maxVal-this.minVal;},
+			extDom:function(){return this.maxDom-this.minDom;},
 			getVal:function(v){
 				if (v >= this.maxDom) {
 					return this.maxVal;
 				} else if (v <= this.minDom) {
 					return this.minVal;
 				} else {
-					return (v - this.minDom) * (this.extVal / this.extDom);
+					return this.minVal + ((v - this.minDom) * (this.extVal() / this.extDom()))
 				}
 			}
 		},
 		yScl01:{
+			name:"bscY",
 			minVal:0,
-			maxVal:400,
+			maxVal:this.DIMS.svgH-this.DIMS.chrtMrgT-this.DIMS.chrtMrgB,
 			minDom:0,
 			maxDom:1000,
-			extVal:function(){return maxVal-minVal;},
-			extDom:function(){return maxDom-minDom;},
+			extVal:function(){return this.maxVal-this.minVal;},
+			extDom:function(){return this.maxDom-this.minDom;},
 			getVal:function(v){
 				if (v >= this.maxDom) {
 					return this.maxVal;
 				} else if (v <= this.minDom) {
 					return this.minVal;
 				} else {
-					return (v - this.minDom) * (this.extVal / this.extDom);
+					return this.minVal + ((v - this.minDom) * (this.extVal() / this.extDom()))
 				}
 			}
 		}
@@ -377,9 +435,233 @@ PSTCG.CHART = function(id){
 		stp2.attr({"stop-color":prmObj.col1});
 	}
 	
+	this.setScales = function(prmObj){
+	//<SF>
+	// Létrehozva: 2018. jún. 30.<br>
+	// Szerző:  Balise Pascal
+	// A scal function-ös objektumok beállítása.<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param prmObj = a paraméter objketum -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		if(prmObj.name === undefined){
+		//<nn>
+		// Léterhozunk egy új alapértelemezett skálázó objektumot.
+		//</nn>
+			
+		}else if(prmObj.name === "bscX"){
+		//<nn>
+		// A paraméterobjektum az alap X skálát módosítja.
+		//</nn>
+		}else if(prmObj.name === "bscX"){
+		//<nn>
+		// A paraméterobjektum az alap Y skálát módosítja.
+		//</nn>	
+		}else{
+		//<nn>
+		// A paraméterobjektum egy új elnevezett skálázó elemet ad a FUNC elemhez.
+		//</nn>
+			
+			this.FUNCS[prmObj.name] = {
+				name:prmObj.name,
+				minVal:0,
+				maxVal:this.DIMS.svgH-this.DIMS.chrtMrgT-this.DIMS.chrtMrgB,
+				minDom:0,
+				maxDom:1000,
+				extVal:function(){return this.maxVal-this.minVal;},
+				extDom:function(){return this.maxDom-this.minDom;},
+				getVal:function(v){
+					if (v >= this.maxDom) {
+						return this.maxVal;
+					} else if (v <= this.minDom) {
+						return this.minVal;
+					} else {
+						return this.minVal + ((v - this.minDom) * (this.extVal() / this.extDom()));
+					}
+				}
+			};
+			
+			//<nn>
+			// Az új scale elemeinek beállítása. 
+			//</nn>
+			if(prmObj.minDom !== undefined){
+				this.FUNCS[prmObj.name].minDom = prmObj.minDom;
+			}
+			if(prmObj.maxDom !== undefined){
+				this.FUNCS[prmObj.name].maxDom = prmObj.maxDom;
+			}
+			if(prmObj.minVal !== undefined){
+				this.FUNCS[prmObj.name].minVal = prmObj.minVal;
+			}
+			if(prmObj.maxVal !== undefined){
+				this.FUNCS[prmObj.name].maxVal = prmObj.maxVal;
+			}
+			
+		}
+		
+		
+	}
 
-
-
+	this.setBGGrid = function(prmObj){
+	//<SF>
+	// Létrehozva: 2018. jún. 30.<br>
+	// Szerző:  Balise Pascal
+	// A háttérháló/rács tulajdonságainak beállítása<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param prmObj = a szokásos mindent tartalmazó paraméter objketum -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		//<nn>
+		// A rács X sűrűségének megváltoztatása.<br>
+		// Mivel ez a két mutatvány a rács teljes eldobásával, és újragenerálásával jár,
+		// minden kisebb módosítást ezek uzán alkalmazunk, mert különben azok az itt használt 
+		// default értékekkel lennének felülírva.
+		//</nn>
+		if(prmObj.xLnNr !== undefined){
+			console.log("prmObj.xLnNr: " + prmObj.xLnNr);
+			if(prmObj.xLnNr != this.BGGRID["x-lines"].length){
+				//<nn>
+				// Kitöröljük a korábbi gridet.
+				//</nn>
+				var xGrid = $("#"+this.BGGRID.grpId+">g").eq(0);
+				xGrid.empty();
+				this.BGGRID["x-lines"] = [];
+				//<nn>
+				// A generáláshoz szükséges változók aktuális értékeit kiszámítjuk!
+				//</nn>
+				var width = this.DIMS.svgW - this.DIMS.chrtMrgL - this.DIMS.chrtMrgR;
+				var height = this.DIMS.svgH - this.DIMS.chrtMrgB - this.DIMS.chrtMrgT;
+				var xStep = width / (prmObj.xLnNr + 1);
+				//<nn>
+				// Gondoskodunk a vonalszín beálításáról is, ha az nem jött volna paraméterként
+				//</nn>
+				if(prmObj.lineColor === undefined){
+					prmObj.lineColor = "#CDCDCD";
+				}
+				//<nn>
+				// Egy for ciklussal legenerájuk az új grid csíkokat.
+				//</nn>
+				for (var ix1 = 0; ix1 < prmObj.xLnNr; ix1++) {
+					var ln = $(document.createElementNS(PSTCG_CNSTS.SVGNS, "line"));
+					ln.attr({
+						"id" : "grd-x" + (ix1 + 1),
+						"x1" : 0 + (ix1 + 1) * xStep + this.DIMS.chrtMrgL,
+						"y1" : 0 + this.DIMS.chrtMrgT,
+						"x2" : 0 + (ix1 + 1) * xStep + this.DIMS.chrtMrgL,
+						"y2" : height + this.DIMS.chrtMrgT,
+						"stroke" : prmObj.lineColor,
+						"stroke-width" : 1,
+						"opacity" : .8
+					});
+					this.BGGRID["x-lines"].push(ln);
+					xGrid.append(ln);
+				}
+				
+			}
+		}
+		
+		//<nn>
+		// A rács X sűrűségének megváltoztatása
+		//</nn>
+		if(prmObj.yLnNr !== undefined){
+			if(prmObj.yLnNr != this.BGGRID["y-lines"].length){
+				console.log("prmObj.yLnNr: " + prmObj.yLnNr);
+				//<nn>
+				// Kitöröljük a korábbi gridet.
+				//</nn>
+				var yGrid = $("#"+this.BGGRID.grpId+">g").eq(1);
+				yGrid.empty();
+				//<nn>
+				// A generáláshoz szükséges változók aktuális értékeit kiszámítjuk!
+				//</nn>
+				var width = this.DIMS.svgW - this.DIMS.chrtMrgL - this.DIMS.chrtMrgR;
+				var height = this.DIMS.svgH - this.DIMS.chrtMrgB - this.DIMS.chrtMrgT;
+				var yStep = height / (prmObj.yLnNr + 1);;
+				//<nn>
+				// Gondoskodunk a vonalszín beálításáról is, ha az nem jött volna paraméterként
+				//</nn>
+				if(prmObj.lineColor === undefined){
+					prmObj.lineColor = "#CDCDCD";
+				}
+				//<nn>
+				// Egy for ciklussal legenerájuk az új grid csíkokat.
+				//</nn>
+				for (var ix1 = 0; ix1 < prmObj.yLnNr; ix1++) {
+					var ln = $(document.createElementNS(PSTCG_CNSTS.SVGNS, "line"));
+					ln.attr({
+						"id" : "grd-y" + (ix1 + 1),
+						"x1" : 0 + this.DIMS.chrtMrgL,
+						"y1" : 0 + (ix1 + 1) * yStep + this.DIMS.chrtMrgT,
+						"x2" : 0 + this.DIMS.chrtMrgL + width,
+						"y2" : 0 + (ix1 + 1) * yStep + this.DIMS.chrtMrgT,
+						"stroke" : prmObj.lineColor,
+						"stroke-width" : 1,
+						"opacity" : .8
+					});
+					this.BGGRID["y-lines"].push(ln);
+					yGrid.append(ln);
+				}
+				
+			}
+		}
+		
+		//<nn>
+		// Minden rácsvonal színének beállítása
+		//</nn>
+		if (prmObj.lineColor !== undefined) {
+			var lns =$("#"+c.BGGRID.grpId+">g>line");
+			lns.attr({
+				stroke:prmObj.lineColor
+			});
+		}
+		if (prmObj.xLineColor !== undefined) {
+			var xGrp =$("#"+this.BGGRID.grpId+">g").eq(0);
+			var lns = xGrp.children("line");
+			lns.attr({
+				stroke: prmObj.xLineColor
+			});
+		}
+		if (prmObj.yLineColor !== undefined) {
+			var yGrp =$("#"+this.BGGRID.grpId+">g").eq(1);
+			var lns = yGrp.children("line");
+			lns.attr({
+				stroke: prmObj.yLineColor
+			});
+		}
+		
+		//<nn>
+		// A rács átlátszóságának beállítása
+		//</nn>
+		if (prmObj.opacity !== undefined) {
+			var lns =$("#"+c.BGGRID.grpId+">g>line");
+			lns.attr({
+				opacity:prmObj.opacity
+			});
+		}
+		
+		
+		//<nn>
+		// A rácsvonalak vastagságának beállítása
+		//</nn>
+		if (prmObj.strokeWidth !== undefined) {
+			var lns =$("#"+c.BGGRID.grpId+">g>line");
+			lns.attr({
+				"stroke-width":prmObj.strokeWidth
+			});
+		}
+	}
 
 
 	this.render = function(prmObj){
@@ -477,7 +759,7 @@ PSTCG.CHART = function(id){
 			//<nn>
 			// A linGrad-ot a DEFS-hez adjuk
 			//</nn>
-			defs.append(grdFill);
+			defs.append(grdFill);			
 		}
 		
 
@@ -548,20 +830,104 @@ PSTCG.CHART = function(id){
 		bgRctGrp.append(bgRect);
 		svg.append(bgRctGrp);
 		
+		
+		
+		//<nn>
+		//+-------------------------------------------------------------------+
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//|            ***********    HÁTTÉR RÁCS       ***********           |
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//+-------------------------------------------------------------------+
+		//</nn>
+		
+		//<nn>
+		// Ellenőrizzük, hogy be vannak-e állítva az alapértelmezett értékek
+		//</nn>
+		if(this.BGGRID['x-lines'].length == 0){
+			this.BGGRID.baseSetup();
+		}
+		
+		var bgGrdGrp = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		bgGrdGrp.attr({
+			"id":this.BGGRID.grpId
+			}
+		);
+		var xGrdGrp = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		for(var ix1 = 0; ix1 < this.BGGRID["x-lines"].length; ix1++){
+			xGrdGrp.append(this.BGGRID["x-lines"][ix1]);
+		}
+		var yGrdGrp = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		for(var ix1 = 0; ix1 < this.BGGRID["y-lines"].length; ix1++){
+			yGrdGrp.append(this.BGGRID["y-lines"][ix1]);
+		}
+		bgGrdGrp.append(xGrdGrp);
+		bgGrdGrp.append(yGrdGrp);
+		
+		svg.append(bgGrdGrp);
+		
+		//<nn>
+		// A TENGELYEK MEGRAJZOLÁSA
+		// TICK-ek, feliratok...
+		//</nn>
+		
+		
+		//<nn>
+		// Az ADATÁBRÁZOLÓ ELEMEK megrjzolása (oszlopok, vonalak, pontok ..stb)
+		//</nn>
+		
+		
+		
+		
+		
 		//<nn>
 		// Az összeállított SVG objektumot bedobjuk a konténerbe.
 		//</nn>
 		cntnr.append(svg);
-		
+	}
+
+	this.getArrMAX = function($a){
+	//<SF>
+	// Létrehozva: 2018. jún. 30.<br>
+	// Szerző:  Balise Pascal
+	// Egy paraméterben kapott tömb maximumát adja vissza<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param $a = a tömb -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		var mx = -9999;
+		mx = Math.max(...$a);
+		return mx;
 	}
 	
-
-
-	this.test001 = function(col0, col1){
+	this.getArrMIN = function($a){
 	//<SF>
-	// Létrehozva: 2018. jún. 27.<br>
+	// Létrehozva: 2018. jún. 30.<br>
 	// Szerző:  Balise Pascal
-	// Mindig az aktuális tesztfüggvény...<br>
+	// Egy paraméterben kapott tömb maximumát adja vissza<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param $a = a tömb -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		var mi = -9999;
+		mi = Math.min(...$a);
+		return mi;
+	}
+	
+	this.getExtnt = function($a){
+	//<SF>
+	// Létrehozva: 2018. jún. 30.<br>
+	// Szerző:  Balise Pascal
+	// LEÍRÁS<br>
 	// PARAMÉTEREK:
 	//×-
 	// @-- @param ... = ... -@
@@ -571,19 +937,40 @@ PSTCG.CHART = function(id){
 	// @-- ... -@
 	//-×
 	//</SF>
+		var res = [];
+		res[0] = this.getArrMIN($a);
+		res[1] = this.getArrMAX($a);
 		
-		if(col0 === undefined){
-			
-		}
-		
-		var bgGrdId = this.SVGDEFS.grads[0].id;
-		var stp1 = $("#"+bgGrdId+">stop").eq(0);
-		stp1.attr({"stop-color":col0});
-		
-		var stp2 = $("#"+bgGrdId+">stop").eq(1);
-		stp2.attr({"stop-color":col1});
+		return res;
 	}
 	
+	
+	this.test001 = function(col0, col1){
+		//<SF>
+		// Létrehozva: 2018. jún. 27.<br>
+		// Szerző:  Balise Pascal
+		// Mindig az aktuális tesztfüggvény...<br>
+		// PARAMÉTEREK:
+		//×-
+		// @-- @param ... = ... -@
+		//-×
+		//MÓDOSÍTÁSOK:
+		//×-
+		// @-- ... -@
+		//-×
+		//</SF>
+			
+			if(col0 === undefined){
+				
+			}
+			
+			var bgGrdId = this.SVGDEFS.grads[0].id;
+			var stp1 = $("#"+bgGrdId+">stop").eq(0);
+			stp1.attr({"stop-color":col0});
+			
+			var stp2 = $("#"+bgGrdId+">stop").eq(1);
+			stp2.attr({"stop-color":col1});
+		}
 };
 
 
