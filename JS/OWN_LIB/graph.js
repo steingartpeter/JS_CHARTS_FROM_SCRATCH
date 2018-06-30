@@ -29,7 +29,7 @@ PSTCG.CHART = function(id){
 // Ez a függvény afféle konstruktor, a fentebb definiált JSON objektumból ad egyet vissza.<br>
 // PARAMÉTEREK:
 //×-
-// @-- @param ... = ... -@
+// @-- @param id = az svg objektum ID-je, ha jön -@
 //-×
 //MÓDOSÍTÁSOK:
 //×-
@@ -56,7 +56,7 @@ PSTCG.CHART = function(id){
 	//<nn>
 	// Az SVG elemek definíciója, mint:<br>
 	// - lineraGradient
-	// - 
+	// - blur
 	//</nn>
 	this.SVGDEFS = {
 		id:'svg-defs-001',
@@ -336,7 +336,7 @@ PSTCG.CHART = function(id){
 		
 	}
 	
-	this.setBGRctColors = function(col0, col1){
+	this.setBGRct = function(prmObj){
 	//<SF>
 	// Létrehozva: 2018. jún. 27.<br>
 	// Szerző:  Balise Pascal
@@ -354,12 +354,12 @@ PSTCG.CHART = function(id){
 		//<nn>
 		// Kezeljük a hiányzó paraméterek esetét.
 		//</nn>
-		if(col0 === undefined){
-			col0 = "#525252";
+		if(prmObj.col0 === undefined){
+			prmObj.col0 = "#525252";
 		}
 		
-		if(col1 === undefined){
-			col1 = "#E5E5E5";
+		if(prmObj.col1 === undefined){
+			prmObj.col1 = "#E5E5E5";
 		}
 		
 		//<nn>
@@ -371,12 +371,17 @@ PSTCG.CHART = function(id){
 		// Átállítjuk a színátmenet szélső értékeit a paraméterben kapott színekre.
 		//</nn>
 		var stp1 = $("#"+bgGrdId+">stop").eq(0);
-		stp1.attr({"stop-color":col0});
+		stp1.attr({"stop-color":prmObj.col0});
 		
 		var stp2 = $("#"+bgGrdId+">stop").eq(1);
-		stp2.attr({"stop-color":col1});
+		stp2.attr({"stop-color":prmObj.col1});
 	}
 	
+
+
+
+
+
 	this.render = function(prmObj){
 	//<SF>
 	// Létrehozva: 2018. jún. 27.<br>
@@ -550,6 +555,8 @@ PSTCG.CHART = function(id){
 		
 	}
 	
+
+
 	this.test001 = function(col0, col1){
 	//<SF>
 	// Létrehozva: 2018. jún. 27.<br>
@@ -578,10 +585,6 @@ PSTCG.CHART = function(id){
 	}
 	
 };
-
-
-
-
 
 
 
