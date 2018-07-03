@@ -136,6 +136,12 @@ PSTCG.CHART = function(id){
 		fill:'url:linGrd001'
 	}
 	
+	this.DATA = {
+			xScrptn:["1",'2','3','4','5'],
+			yScrptn:["200","400","400","800",'1000'],
+			vals01:[180,450,610,500,750]
+		}
+	
 	
 	//<nn>
 	// Még mindig a háttér, most lássuk a GRID-et!<br/>
@@ -211,14 +217,28 @@ PSTCG.CHART = function(id){
 					line:{
 						id:"",
 						x1:this.DIMS.chrtMrgL,
-						y1:this.DIMS.svgW - this.DIMS.chrtMrgT,
-						x2:this.DIMS.svgW - this.DIMS.chrtMrgT - this.DIMS.chrtMrgL,
-						y2:this.DIMS.svgW - this.DIMS.chrtMrgT - this.DIMS.chrtMrgL,
-						stroke:'#FF0505',
+						y1:this.DIMS.svgH - this.DIMS.chrtMrgB,
+						x2:this.DIMS.svgW - this.DIMS.chrtMrgL,
+						y2:this.DIMS.svgH - this.DIMS.chrtMrgB,
+						stroke:'#050505',
 						"stroke-width":1,
 						opacity:.99
 					},
+					tickMeta:{
+						"nrOfTicks":self.DATA.vals01.length,
+						"tick-length":5,
+						"tick-color":'#FF0505',
+						"tick-stroke":'#FF0505',
+						"tick-stroke-width":1,
+						"tick-opacity":.99
+					},
 					gTicks:[],
+					axisTxtMeta:{
+						txtSize:5,
+						txtColor:"#050505",
+						txtFontName:"Arial",
+						txtDgre:0
+					},
 					gTexts:[]
 				},
 				{
@@ -228,22 +248,36 @@ PSTCG.CHART = function(id){
 						x1:this.DIMS.chrtMrgL,
 						y1:this.DIMS.chrtMrgT,
 						x2:this.DIMS.chrtMrgL,
-						y2:this.DIMS.svgW - this.DIMS.chrtMrgT - this.DIMS.chrtMrgL,
-						stroke:'#FF0505',
+						y2:this.DIMS.svgW - this.DIMS.chrtMrgL,
+						stroke:'#050505',
 						"stroke-width":1,
 						opacity:.99
 					},
+					tickMeta:{
+						"nrOfTicks":self.DATA.vals01.length,
+						"tick-length":5,
+						"tick-color":'#FF0505',
+						"tick-stroke":'#FF0505',
+						"tick-stroke-width":1,
+						"tick-opacity":.99
+					},
 					gTicks:[],
+					axisTxtMeta:{
+						txtSize:5,
+						txtColor:"#050505",
+						txtFontName:"Arial",
+						txtDgre:0
+					},
 					gTexts:[]
 				}
-		]
+			],
+			baseSetup:function(){
+				this.axs[0].line.id = "x-axis-01";
+				this.axs[1].line.id = "y-axis-01";
+			}
 	}
 	
-	this.DATA = {
-		xScrptn:["1",'2','3','4','5'],
-		yScrptn:["200","400","400","800",'1000'],
-		vals01:[180,450,610,500,750]
-	}
+	
 	
 	this.FUNCS = {
 		xScl01:{
@@ -866,11 +900,71 @@ PSTCG.CHART = function(id){
 		svg.append(bgGrdGrp);
 		
 		//<nn>
-		// A TENGELYEK MEGRAJZOLÁSA
-		// TICK-ek, feliratok...
+		//+-------------------------------------------------------------------+
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//|            ***********      TENGELYEK       ***********           |
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//+-------------------------------------------------------------------+
 		//</nn>
+		var axsGrpX01 = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		axsGrpX01.attr({"id":this.AXESS.axs[0].grpId});
+		var xAxLine = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
+		xAxLine.attr({
+			id:this.AXESS.axs[0].line.id,
+			x1:this.AXESS.axs[0].line.x1,
+			x2:this.AXESS.axs[0].line.x2,
+			y1:this.AXESS.axs[0].line.y1,
+			y2:this.AXESS.axs[0].line.y2,
+			stroke:this.AXESS.axs[0].line.stroke,
+			"stroke-width":this.AXESS.axs[0]["stroke-width"],
+			opacity:this.AXESS.axs[0].line.opacity
+		});
+		
+		/*TICKEK
+		 * for(var ix1 =0; ix1<this.AXESS.axs[0].tickMeta.nrOfTicks; ix1++){
+		 * var tck = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
+		 * tck.attr({
+		 * 	id:"x-tck"+ix1,
+		 * 	x1:0,
+		 * 	x2:0,
+		 * 	y1:0,
+		 * 	y2:0,
+		 * 	stroke:'',
+		 * 	'stroke-width':1,
+		 * 	opacity:.99
+		 * });
+			
+		}
+		*/
 		
 		
+		var axsGrpY01 = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		axsGrpY01.attr({"id":this.AXESS.axs[1].grpId});
+		var yAxLine = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
+		yAxLine.attr({
+			id:this.AXESS.axs[1].line.id,
+			x1:this.AXESS.axs[1].line.x1,
+			x2:this.AXESS.axs[1].line.x2,
+			y1:this.AXESS.axs[1].line.y1,
+			y2:this.AXESS.axs[1].line.y2,
+			stroke:this.AXESS.axs[1].line.stroke,
+			"stroke-width":this.AXESS.axs[1]["stroke-width"],
+			opacity:this.AXESS.axs[1].line.opacity
+		});
+		
+		/*TICKEK
+		 * for(var ix1 =0; ix1<this.AXESS.axs[1]){
+			
+		}*/
+		
+		
+		//<nn>
+		// Hozzáadjuk a grfikonhoz
+		//</nn>
+		axsGrpX01.append(xAxLine);
+		axsGrpY01.append(yAxLine);
+		svg.append(axsGrpX01);
+		svg.append(axsGrpY01);
 		//<nn>
 		// Az ADATÁBRÁZOLÓ ELEMEK megrjzolása (oszlopok, vonalak, pontok ..stb)
 		//</nn>
@@ -946,31 +1040,31 @@ PSTCG.CHART = function(id){
 	
 	
 	this.test001 = function(col0, col1){
-		//<SF>
-		// Létrehozva: 2018. jún. 27.<br>
-		// Szerző:  Balise Pascal
-		// Mindig az aktuális tesztfüggvény...<br>
-		// PARAMÉTEREK:
-		//×-
-		// @-- @param ... = ... -@
-		//-×
-		//MÓDOSÍTÁSOK:
-		//×-
-		// @-- ... -@
-		//-×
-		//</SF>
+	//<SF>
+	// Létrehozva: 2018. jún. 27.<br>
+	// Szerző:  Balise Pascal
+	// Mindig az aktuális tesztfüggvény...<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param ... = ... -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		if(col0 === undefined){
 			
-			if(col0 === undefined){
-				
-			}
-			
-			var bgGrdId = this.SVGDEFS.grads[0].id;
-			var stp1 = $("#"+bgGrdId+">stop").eq(0);
-			stp1.attr({"stop-color":col0});
-			
-			var stp2 = $("#"+bgGrdId+">stop").eq(1);
-			stp2.attr({"stop-color":col1});
 		}
+		
+		var bgGrdId = this.SVGDEFS.grads[0].id;
+		var stp1 = $("#"+bgGrdId+">stop").eq(0);
+		stp1.attr({"stop-color":col0});
+		
+		var stp2 = $("#"+bgGrdId+">stop").eq(1);
+		stp2.attr({"stop-color":col1});
+	}
 };
 
 
