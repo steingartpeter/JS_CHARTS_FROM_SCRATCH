@@ -39,9 +39,20 @@ PSTCG.CHART = function(id){
 
 	var self = this;
 	
+	
 	if(id === undefined){
 		id = 'pst-chrt'+Math.floor(Math.random()*1000);
 	}
+	
+	//<nn>
+	// Az adatok, enélkül semi értelme az egésznek.
+	//</nn>
+	this.DATA = {
+		xScrptn:["1",'2','3','4','5'],
+		yScrptn:["200","400","600","800",'1000'],
+		vals01:[180,450,610,500,750]
+	}
+	
 	
 	//<nn>
 	// Az alapértelmezett = DEFAULT értékeket tartalmazó objektum.
@@ -136,11 +147,7 @@ PSTCG.CHART = function(id){
 		fill:'url:linGrd001'
 	}
 	
-	this.DATA = {
-			xScrptn:["1",'2','3','4','5'],
-			yScrptn:["200","400","400","800",'1000'],
-			vals01:[180,450,610,500,750]
-		}
+	
 	
 	
 	//<nn>
@@ -906,6 +913,10 @@ PSTCG.CHART = function(id){
 		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
 		//+-------------------------------------------------------------------+
 		//</nn>
+		
+		//<nn>
+		// Az X TENGELY TENGELY-EGYNESÉNEK GENERÁLÁSA
+		//</nn>
 		var axsGrpX01 = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
 		axsGrpX01.attr({"id":this.AXESS.axs[0].grpId});
 		var xAxLine = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
@@ -920,24 +931,56 @@ PSTCG.CHART = function(id){
 			opacity:this.AXESS.axs[0].line.opacity
 		});
 		
-		/*TICKEK
-		 * for(var ix1 =0; ix1<this.AXESS.axs[0].tickMeta.nrOfTicks; ix1++){
-		 * var tck = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
-		 * tck.attr({
-		 * 	id:"x-tck"+ix1,
-		 * 	x1:0,
-		 * 	x2:0,
-		 * 	y1:0,
-		 * 	y2:0,
-		 * 	stroke:'',
-		 * 	'stroke-width':1,
-		 * 	opacity:.99
-		 * });
-			
+		//<nn>
+		// Az X TENGELY TICKjei
+		//</nn>
+		var tckStep = (this.DIMS.svgW - this.DIMS.chrtMrgL-this.DIMS.chrtMrgR)/(this.AXESS.axs[0].tickMeta.nrOfTicks+1)
+		var xTcks = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		xTcks.attr({
+			id:"xTcks01"
+		});
+		for(var ix1 =0; ix1<this.AXESS.axs[0].tickMeta.nrOfTicks; ix1++){
+			var tck = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
+			tck.attr({
+				id:"x-tck"+ix1,
+				x1:this.DIMS.chrtMrgL + ((ix1+1)*tckStep),
+				x2:this.DIMS.chrtMrgL + ((ix1+1)*tckStep),
+				y1:this.DIMS.svgH-this.DIMS.chrtMrgB,
+				y2:this.DIMS.svgH-this.DIMS.chrtMrgB+this.AXESS.axs[0].tickMeta["tick-length"],
+				stroke:this.AXESS.axs[0].tickMeta["tick-color"],
+				'stroke-width':1,
+				opacity:.99
+			});
+			this.AXESS.axs[0].gTicks.push(tck);
+			xTcks.append(this.AXESS.axs[0].gTicks[ix1]);
 		}
-		*/
+		axsGrpX01.append(xTcks);
+		
+		//<nn>
+		// Az X TENGELY FELIRATAI
+		//</nn>
+		var xAxsTxt = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		for(var ix1 =0; ix1<this.AXESS.axs[0].tickMeta.nrOfTicks; ix1++){
+			var txt = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'text'));
+			txt.attr({
+				id:"xAxsTxt-"+(ix1+1),
+				x:this.DIMS.chrtMrgL + ((ix1+1)*tckStep)-(this.AXESS.axs[0].axisTxtMeta.txtSize/2),
+				y:this.DIMS.svgH-this.DIMS.chrtMrgB+(this.AXESS.axs[0].axisTxtMeta.txtSize)+this.AXESS.axs[1].tickMeta["tick-length"],
+				fill:this.AXESS.axs[0].axisTxtMeta.txtColor,
+				"font-size":this.AXESS.axs[0].axisTxtMeta.txtSize
+			});
+			txt.text(this.DATA.xScrptn[ix1]);
+			
+			this.AXESS.axs[0].gTexts.push(txt);
+			xAxsTxt.append(this.AXESS.axs[0].gTexts[ix1]);
+		}
+		axsGrpX01.append(xAxsTxt);
 		
 		
+		
+		//<nn>
+		// Az Y TENGELY TENGELY-EGYNESÉNEK GENERÁLÁSA
+		//</nn>
 		var axsGrpY01 = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
 		axsGrpY01.attr({"id":this.AXESS.axs[1].grpId});
 		var yAxLine = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
@@ -952,10 +995,53 @@ PSTCG.CHART = function(id){
 			opacity:this.AXESS.axs[1].line.opacity
 		});
 		
-		/*TICKEK
-		 * for(var ix1 =0; ix1<this.AXESS.axs[1]){
+		//<nn>
+		// Az Y TENGELY TICKjei
+		//</nn>
+		var tckStep = (this.DIMS.svgH - this.DIMS.chrtMrgT-this.DIMS.chrtMrgB)/(this.AXESS.axs[1].tickMeta.nrOfTicks+1)
+		var yTcks = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		yTcks.attr({
+			id:"yTcks01"
+		});
+		for(var ix1 =0; ix1<this.AXESS.axs[0].tickMeta.nrOfTicks; ix1++){
+			var tck = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
+			tck.attr({
+				id:"y-tck"+ix1,
+				x1:this.DIMS.chrtMrgL,
+				x2:this.DIMS.chrtMrgL - this.AXESS.axs[1].tickMeta["tick-length"],
+				y1:this.DIMS.chrtMrgT + ((ix1+1)*tckStep),
+				y2:this.DIMS.chrtMrgT + ((ix1+1)*tckStep),
+				stroke:this.AXESS.axs[1].tickMeta["tick-color"],
+				'stroke-width':1,
+				opacity:.99
+			});
+			this.AXESS.axs[1].gTicks.push(tck);
+			yTcks.append(this.AXESS.axs[1].gTicks[ix1]);
+		}
+		axsGrpY01.append(yTcks);
+		
+		//<nn>
+		// Az X TENGELY FELIRATAI
+		//</nn>
+		var yAxsTxt = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		var maxTxtLen = this.getArrMAX(this.DATA.yScrptn).toString().length;
+		
+		console.log("maxTxtLen: " + maxTxtLen);
+		for(var ix1 =0; ix1<this.AXESS.axs[1].tickMeta.nrOfTicks; ix1++){
+			var txt = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'text'));
+			txt.attr({
+				id:"yAxsTxt-"+(ix1+1),
+				x:this.DIMS.chrtMrgL - this.AXESS.axs[1].tickMeta["tick-length"] - (3*this.AXESS.axs[1].axisTxtMeta.txtSize),
+				y:this.DIMS.svgH - this.DIMS.chrtMrgB - ((ix1+1)*tckStep),
+				fill:this.AXESS.axs[1].axisTxtMeta.txtColor,
+				"font-size":this.AXESS.axs[1].axisTxtMeta.txtSize
+			});
+			txt.text(this.DATA.yScrptn[ix1]);
 			
-		}*/
+			this.AXESS.axs[1].gTexts.push(txt);
+			yAxsTxt.append(this.AXESS.axs[1].gTexts[ix1]);
+		}
+		axsGrpX01.append(yAxsTxt);
 		
 		
 		//<nn>
@@ -995,6 +1081,7 @@ PSTCG.CHART = function(id){
 	//</SF>
 		var mx = -9999;
 		mx = Math.max(...$a);
+		console.log("mx: "+ mx);
 		return mx;
 	}
 	
