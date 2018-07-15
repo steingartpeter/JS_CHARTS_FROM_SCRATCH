@@ -105,7 +105,19 @@ h4{
 .doc-closer{
 	cursor: s-resize;
 }
-
+.floatDataDiv{
+	 position:absolute;
+	 border:1px solid black;
+	 padding:5px;
+	 font-family: consolas;
+	 font-weight: bold;
+	 font-size: 12px;
+	 background-color: #CDCDCD;
+	 opacity:0.65;
+	 color:#151555;
+	 border:3px solid #EFEFEF;
+	 box-shadow:2px 2px 4px #050505;
+}
 
 
 

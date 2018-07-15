@@ -49,9 +49,11 @@ PSTCG.CHART = function(id){
 	//</nn>
 	this.DATA = {
 		xScrptn:["1",'2','3','4','5'],
-		yScrptn:["200","400","600","800",'1000'],
+		yScrptn:["200","400","600","800","1000"],
 		vals01:[180,450,610,500,750]
-	}
+	};
+	
+	
 	
 	
 	//<nn>
@@ -117,16 +119,50 @@ PSTCG.CHART = function(id){
 	//<nn>
 	// A chartot leíró dimenziók.
 	// Az itt alapértelmezettként megjelenítettek az S méretű charthoz valók.
+	// Vagy amik esetleg bejöttek :).
 	//</nn>
-	this.DIMS = {
-		svgW:200,
-		svgH:200,
-		chrtMrgT:28,
-		chrtMrgB:20,
-		chrtMrgL:20,
-		chrtMrgR:20,
-		chrtBGRectDims: [160,152],	
-	};
+	if(this.META.size == undefined || this.META.size == 0 || this.META.size == "S"){
+		this.DIMS = {
+			svgW:200,
+			svgH:200,
+			chrtMrgT:28,
+			chrtMrgB:20,
+			chrtMrgL:20,
+			chrtMrgR:20,
+			chrtBGRectDims: [160,152],	
+		};
+	}else if(this.META.size == "M"){
+		this.DIMS = {
+			svgW:400,
+			svgH:400,
+			chrtMrgT:56,
+			chrtMrgB:40,
+			chrtMrgL:40,
+			chrtMrgR:40,
+			chrtBGRectDims: [320,304],	
+		};
+	}else if(this.META.size == "L"){
+		this.DIMS = {
+			svgW:600,
+			svgH:600,
+			chrtMrgT:84,
+			chrtMrgB:60,
+			chrtMrgL:60,
+			chrtMrgR:60,
+			chrtBGRectDims: [480,456],	
+		};
+	}else if(this.META.size == "XL"){
+		this.DIMS = {
+				svgW:800,
+				svgH:800,
+				chrtMrgT:112,
+				chrtMrgB:80,
+				chrtMrgL:80,
+				chrtMrgR:80,
+				chrtBGRectDims: [640,608],	
+			};
+		}
+	
 	
 	//<nn>
 	// A chart hattár rectangle-je ez adja a színezett hátteret magához a charthoz. emiatt:<br/>
@@ -145,8 +181,7 @@ PSTCG.CHART = function(id){
 		width:this.DIMS.chrtBGRectDims[0],
 		height:this.DIMS.chrtBGRectDims[1],
 		fill:'url:linGrd001'
-	}
-	
+	};
 	
 	
 	
@@ -177,7 +212,7 @@ PSTCG.CHART = function(id){
 			//<nn>
 			// A rácsunk y osztásköze.
 			//</nn>
-			var yStep = height / (yLnNr + 1);
+			var yStep = height / (yLnNr);
 
 			//<nn>
 			// Egy for ciklussal meggeneráljuk a háló függőleges vonalait.
@@ -215,7 +250,7 @@ PSTCG.CHART = function(id){
 				this['y-lines'].push(ln);
 			}
 		}
-	}
+	};
 	
 	this.AXESS = {
 		axs:[
@@ -282,17 +317,32 @@ PSTCG.CHART = function(id){
 				this.axs[0].line.id = "x-axis-01";
 				this.axs[1].line.id = "y-axis-01";
 			}
-	}
+	};
 	
-	
+	this.DATA_META = {
+		typ:"BAR",
+		fill:"#FFCC11",
+		stroke:"none",
+		"stroke-width":"0px",
+		opacity:1,
+		drwPoints:false,
+		dataPoint:{
+			shape:"dot",
+			size:"3px",
+			fill:"#FFAA22",
+			"stroke-width":"1px",
+			stroke:"#050505",
+			position:"above"
+		}
+	};
 	
 	this.FUNCS = {
 		xScl01:{
 			name:"bscX",
 			minVal:0,
-			maxVal:400,
+			maxVal:this.DIMS.svgW-this.DIMS.chrtMrgL-this.DIMS.chrtMrgR,
 			minDom:0,
-			maxDom:1000,
+			maxDom:this.DATA.vals01.length+1,
 			extVal:function(){return this.maxVal-this.minVal;},
 			extDom:function(){return this.maxDom-this.minDom;},
 			getVal:function(v){
@@ -323,7 +373,7 @@ PSTCG.CHART = function(id){
 				}
 			}
 		}
-	}
+	};
 	
 	//<nn>
 	//+-----------------------------------------------------+
@@ -334,7 +384,7 @@ PSTCG.CHART = function(id){
 	//</nn>
 	
 	//<nn>
-	// A META elem bellításának függvénye.
+	// A META elem beállításának függvénye.
 	//</nn>
 	this.setMeta = function(prmObj){
 	//<SF>
@@ -372,7 +422,8 @@ PSTCG.CHART = function(id){
 			this.META.title = prmObj.title;
 		}
 		
-	}
+	};
+	
 	
 	this.setDIMS = function(prmObj){
 	//<SF>
@@ -433,7 +484,7 @@ PSTCG.CHART = function(id){
 			
 		}
 		
-	}
+	};
 	
 	this.setBGRct = function(prmObj){
 	//<SF>
@@ -474,7 +525,7 @@ PSTCG.CHART = function(id){
 		
 		var stp2 = $("#"+bgGrdId+">stop").eq(1);
 		stp2.attr({"stop-color":prmObj.col1});
-	}
+	};
 	
 	this.setScales = function(prmObj){
 	//<SF>
@@ -547,7 +598,7 @@ PSTCG.CHART = function(id){
 		}
 		
 		
-	}
+	};
 
 	this.setBGGrid = function(prmObj){
 	//<SF>
@@ -571,7 +622,7 @@ PSTCG.CHART = function(id){
 		// default értékekkel lennének felülírva.
 		//</nn>
 		if(prmObj.xLnNr !== undefined){
-			console.log("prmObj.xLnNr: " + prmObj.xLnNr);
+			//console.log("prmObj.xLnNr: " + prmObj.xLnNr);
 			if(prmObj.xLnNr != this.BGGRID["x-lines"].length){
 				//<nn>
 				// Kitöröljük a korábbi gridet.
@@ -629,7 +680,7 @@ PSTCG.CHART = function(id){
 				//</nn>
 				var width = this.DIMS.svgW - this.DIMS.chrtMrgL - this.DIMS.chrtMrgR;
 				var height = this.DIMS.svgH - this.DIMS.chrtMrgB - this.DIMS.chrtMrgT;
-				var yStep = height / (prmObj.yLnNr + 1);;
+				var yStep = height / (prmObj.yLnNr+1);
 				//<nn>
 				// Gondoskodunk a vonalszín beálításáról is, ha az nem jött volna paraméterként
 				//</nn>
@@ -702,7 +753,7 @@ PSTCG.CHART = function(id){
 				"stroke-width":prmObj.strokeWidth
 			});
 		}
-	}
+	};
 
 
 	this.render = function(prmObj){
@@ -916,6 +967,9 @@ PSTCG.CHART = function(id){
 		
 		//<nn>
 		// Az X TENGELY TENGELY-EGYNESÉNEK GENERÁLÁSA
+		// Tanulságos, hogy az x tengelyen az adatoknál szünettel kezdünk, és szünettel fejezzük be a sort...
+		// az Y tengelynél ez t em lehet megtenni, mert az adatméretet jelző objektumok a chart teljes
+		// magasségéra vannak generálva.
 		//</nn>
 		var axsGrpX01 = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
 		axsGrpX01.attr({"id":this.AXESS.axs[0].grpId});
@@ -979,7 +1033,7 @@ PSTCG.CHART = function(id){
 		
 		
 		//<nn>
-		// Az Y TENGELY TENGELY-EGYNESÉNEK GENERÁLÁSA
+		// Az Y TENGELY TENGELY-EGYENESÉNEK GENERÁLÁSA
 		//</nn>
 		var axsGrpY01 = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
 		axsGrpY01.attr({"id":this.AXESS.axs[1].grpId});
@@ -998,19 +1052,19 @@ PSTCG.CHART = function(id){
 		//<nn>
 		// Az Y TENGELY TICKjei
 		//</nn>
-		var tckStep = (this.DIMS.svgH - this.DIMS.chrtMrgT-this.DIMS.chrtMrgB)/(this.AXESS.axs[1].tickMeta.nrOfTicks+1)
+		var tckStep = (this.DIMS.svgH - this.DIMS.chrtMrgT-this.DIMS.chrtMrgB)/(this.AXESS.axs[1].tickMeta.nrOfTicks)
 		var yTcks = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
 		yTcks.attr({
 			id:"yTcks01"
 		});
-		for(var ix1 =0; ix1<this.AXESS.axs[0].tickMeta.nrOfTicks; ix1++){
+		for(var ix1 =0; ix1<=this.AXESS.axs[0].tickMeta.nrOfTicks; ix1++){
 			var tck = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'line'));
 			tck.attr({
 				id:"y-tck"+ix1,
 				x1:this.DIMS.chrtMrgL,
 				x2:this.DIMS.chrtMrgL - this.AXESS.axs[1].tickMeta["tick-length"],
-				y1:this.DIMS.chrtMrgT + ((ix1+1)*tckStep),
-				y2:this.DIMS.chrtMrgT + ((ix1+1)*tckStep),
+				y1:this.DIMS.chrtMrgT + ((ix1)*tckStep),
+				y2:this.DIMS.chrtMrgT + ((ix1)*tckStep),
 				stroke:this.AXESS.axs[1].tickMeta["tick-color"],
 				'stroke-width':1,
 				opacity:.99
@@ -1026,7 +1080,7 @@ PSTCG.CHART = function(id){
 		var yAxsTxt = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
 		var maxTxtLen = this.getArrMAX(this.DATA.yScrptn).toString().length;
 		
-		console.log("maxTxtLen: " + maxTxtLen);
+		//console.log("maxTxtLen: " + maxTxtLen);
 		for(var ix1 =0; ix1<this.AXESS.axs[1].tickMeta.nrOfTicks; ix1++){
 			var txt = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'text'));
 			txt.attr({
@@ -1051,21 +1105,43 @@ PSTCG.CHART = function(id){
 		axsGrpY01.append(yAxLine);
 		svg.append(axsGrpX01);
 		svg.append(axsGrpY01);
+		
 		//<nn>
-		// Az ADATÁBRÁZOLÓ ELEMEK megrjzolása (oszlopok, vonalak, pontok ..stb)
+		//+-------------------------------------------------------------------+
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//|            ***********       ADATELEMEK     ***********           |
+		//|\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\|
+		//+-------------------------------------------------------------------+
 		//</nn>
 		
+
+		//<nn>
+		// Ide az aadatábrázolás elé beteszünk egy tandom data generálót :)
+		// Ez később nem kell, csak most a teszteléshez...
+		//</nn>
+		for(var ix1=0; ix1 < this.DATA.vals01.length; ix1++){
+			this.DATA.vals01[ix1] = this.getRndINT(100, 900);
+		}
 		
-		
+		//<nn>
+		// Az ADATÁBRÁZOLÓ ELEMEK megrajzolása (oszlopok, vonalak, pontok ..stb)
+		//</nn>
+		var dataGrp = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
+		dataGrp.attr({id:"chart-data"});
+		var svgDrw = this.genDataSvg(this.DATA_META.typ);
+		console.log("svgDrw:");
+		console.log(svgDrw);
+		dataGrp.append(svgDrw);
+		svg.append(dataGrp);
 		
 		
 		//<nn>
 		// Az összeállított SVG objektumot bedobjuk a konténerbe.
 		//</nn>
 		cntnr.append(svg);
-	}
+	};
 
-	this.getArrMAX = function($a){
+	this.getArrMAX = function(a){
 	//<SF>
 	// Létrehozva: 2018. jún. 30.<br>
 	// Szerző:  Balise Pascal
@@ -1079,13 +1155,16 @@ PSTCG.CHART = function(id){
 	// @-- ... -@
 	//-×
 	//</SF>
-		var mx = -9999;
-		mx = Math.max(...$a);
-		console.log("mx: "+ mx);
+		var mx = -Infinity, x = a.length;
+		while(x--){
+			if(a[x] > mx){
+				mx = a[x];
+			}
+		}
 		return mx;
-	}
+	};
 	
-	this.getArrMIN = function($a){
+	this.getArrMIN = function(a){
 	//<SF>
 	// Létrehozva: 2018. jún. 30.<br>
 	// Szerző:  Balise Pascal
@@ -1099,12 +1178,17 @@ PSTCG.CHART = function(id){
 	// @-- ... -@
 	//-×
 	//</SF>
-		var mi = -9999;
-		mi = Math.min(...$a);
+		var mi = Infinity, x = a.length;
+		//mi = Math.min(...$a);*/
+		while(x--){
+			if(arr[x] < mi){
+				mi = arr[x];
+			}
+		}
 		return mi;
-	}
+	};
 	
-	this.getExtnt = function($a){
+	this.getExtnt = function(a){
 	//<SF>
 	// Létrehozva: 2018. jún. 30.<br>
 	// Szerző:  Balise Pascal
@@ -1119,11 +1203,92 @@ PSTCG.CHART = function(id){
 	//-×
 	//</SF>
 		var res = [];
-		res[0] = this.getArrMIN($a);
-		res[1] = this.getArrMAX($a);
+		res[0] = this.getArrMIN(a);
+		res[1] = this.getArrMAX(a);
 		
 		return res;
+	};
+	
+	this.genDataSvg= function(t){
+	//<SF>
+	// 2018. júl. 12.<br>
+	// Az adatokhoz tartozó grafikus elemek legenerálása<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param ... = ... -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		//<nn>
+		// Ha nem jött tipusmeghatározás -> BAR lesz.
+		//</nn>
+		if(t === undefined){
+			t = "BAR";
+		}
+		
+		
+		if(t == "BAR"){
+			var svg = [];
+			var barWidth = 0.75*(this.DIMS.svgW - this.DIMS.chrtMrgR-this.DIMS.chrtMrgR) / (this.DATA.vals01.length+1);
+			
+			for(var ix1=0; ix1 < this.DATA.vals01.length; ix1++){
+				var r = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'rect'));
+				r.attr({
+					id:"bar-" + ("0"+ix1).substring(-2),
+					fill:this.DATA_META.fill,
+					x:this.FUNCS.xScl01.getVal(ix1+1)+this.DIMS.chrtMrgL-(barWidth/2),
+					y:this.DIMS.svgH - this.FUNCS.yScl01.getVal(this.DATA.vals01[ix1])-this.DIMS.chrtMrgB,
+					width:barWidth+"px",
+					height:this.FUNCS.yScl01.getVal(this.DATA.vals01[ix1]),
+					data:this.DATA.vals01[ix1]
+				});
+				r.mouseenter(function(event){
+					var hvDiv = $(document.createElement('div'));
+					var d = $(this);
+					hvDiv.html("<p>"+d.attr("data")+"</p>");
+					hvDiv.addClass("floatDataDiv");
+					hvDiv.css({'top':event.pageY-50,'left':event.pageX});
+					$("body").append(hvDiv);
+				});
+				r.mouseout(function(){
+					$(".floatDataDiv").remove();
+				});
+				svg.push(r);
+			}
+		}
+		
+		return svg;
 	}
+	
+	this.getRndINT=function(min, max){
+	//<SF>
+	// 2018. júl. 12.<br>
+	// Egy random INT generátor<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param ... = ... -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		if(min === undefined){
+			min = 1;
+		}
+		if(max === undefined){
+			max = 6;
+		}
+		return Math.floor(min+(Math.random()*(max-min)));
+		
+	}
+	
+	
 	
 	
 	this.test001 = function(col0, col1){
@@ -1151,7 +1316,7 @@ PSTCG.CHART = function(id){
 		
 		var stp2 = $("#"+bgGrdId+">stop").eq(1);
 		stp2.attr({"stop-color":col1});
-	}
+	};
 };
 
 
@@ -1167,3 +1332,4 @@ PSTCG.CHART = function(id){
 
 
 
+;
