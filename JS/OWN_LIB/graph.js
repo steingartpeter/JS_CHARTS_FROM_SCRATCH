@@ -64,7 +64,13 @@ PSTCG.CHART = function(id){
 		chartId:id,
 		fill:"#A5A5A5",
 		size:"S",
-		title:"Teszt chart 001"
+		title:"Teszt chart 001",
+		ttlProps:{
+			fontFamily:"Consolas",
+			fontSize:"16",
+			fontColor:"#050505",
+			fontDecor:"none"
+		}
 	};
 	
 	//<nn>
@@ -775,7 +781,10 @@ PSTCG.CHART = function(id){
 		// Levesszük az oldalról a konténer objektum egy referenciáját.
 		//</nn>
 		var cntnr = $("#"+this.META.cntnrId);
-		
+		//<nn>
+		// Ha el akarjuk távolítani az előző chartot, akkor ez kell:
+		//</nn>
+		cntnr.find("svg").remove();
 		
 		//<nn>
 		//+-------------------------------------------------------------------+
@@ -918,10 +927,26 @@ PSTCG.CHART = function(id){
 			//fill : this.BGRECT.fill
 			fill : "url(#" + this.SVGDEFS.grads[0].id + ")"
 		});
-		
 		bgRctGrp.append(bgRect);
+		
+		//<nn>
+		// Már a bgretct-re rátehetjük a feliratot, a chart title-t.
+		//</nn>
+		var ttl = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'text'));
+		ttl.attr({
+			id:"chrtTtl01",
+			x:25,
+			y:Number(this.META.ttlProps.fontSize)*1.5,
+			fill:this.META.ttlProps.fontColor,
+			stroke:"none",
+			"font-size":this.META.ttlProps.fontColor
+		});
+		ttl.css("font-family", this.META.fontFamily);
+		ttl.text(this.META.title);
+		bgRctGrp.append(ttl);
 		svg.append(bgRctGrp);
 		
+
 		
 		
 		//<nn>
@@ -1141,6 +1166,11 @@ PSTCG.CHART = function(id){
 		cntnr.append(svg);
 	};
 
+	//+--------------------------------------------------+
+	//|##################################################|
+	//|///////      HELPER/UTILITY FUNCTIONS     \\\\\\\\|
+	//|##################################################|
+	//+--------------------------------------------------+
 	this.getArrMAX = function(a){
 	//<SF>
 	// Létrehozva: 2018. jún. 30.<br>
