@@ -48,9 +48,9 @@ PSTCG.CHART = function(id){
 	// Az adatok, enélkül semi értelme az egésznek.
 	//</nn>
 	this.DATA = {
-		xScrptn:["1",'2','3','4','5'],
+		xScrptn:["1",'2','3','4','5','6','7','8'],
 		yScrptn:["200","400","600","800","1000"],
-		vals01:[180,450,610,500,750]
+		vals01:[180,450,610,500,750,422,880,950]
 	};
 	
 	
@@ -302,7 +302,7 @@ PSTCG.CHART = function(id){
 						opacity:.99
 					},
 					tickMeta:{
-						"nrOfTicks":self.DATA.vals01.length,
+						"nrOfTicks":self.DATA.yScrptn.length,
 						"tick-length":5,
 						"tick-color":'#FF0505',
 						"tick-stroke":'#FF0505',
@@ -1171,74 +1171,8 @@ PSTCG.CHART = function(id){
 	//|///////      HELPER/UTILITY FUNCTIONS     \\\\\\\\|
 	//|##################################################|
 	//+--------------------------------------------------+
-	this.getArrMAX = function(a){
-	//<SF>
-	// Létrehozva: 2018. jún. 30.<br>
-	// Szerző:  Balise Pascal
-	// Egy paraméterben kapott tömb maximumát adja vissza<br>
-	// PARAMÉTEREK:
-	//×-
-	// @-- @param $a = a tömb -@
-	//-×
-	//MÓDOSÍTÁSOK:
-	//×-
-	// @-- ... -@
-	//-×
-	//</SF>
-		var mx = -Infinity, x = a.length;
-		while(x--){
-			if(a[x] > mx){
-				mx = a[x];
-			}
-		}
-		return mx;
-	};
-	
-	this.getArrMIN = function(a){
-	//<SF>
-	// Létrehozva: 2018. jún. 30.<br>
-	// Szerző:  Balise Pascal
-	// Egy paraméterben kapott tömb maximumát adja vissza<br>
-	// PARAMÉTEREK:
-	//×-
-	// @-- @param $a = a tömb -@
-	//-×
-	//MÓDOSÍTÁSOK:
-	//×-
-	// @-- ... -@
-	//-×
-	//</SF>
-		var mi = Infinity, x = a.length;
-		//mi = Math.min(...$a);*/
-		while(x--){
-			if(arr[x] < mi){
-				mi = arr[x];
-			}
-		}
-		return mi;
-	};
-	
-	this.getExtnt = function(a){
-	//<SF>
-	// Létrehozva: 2018. jún. 30.<br>
-	// Szerző:  Balise Pascal
-	// LEÍRÁS<br>
-	// PARAMÉTEREK:
-	//×-
-	// @-- @param ... = ... -@
-	//-×
-	//MÓDOSÍTÁSOK:
-	//×-
-	// @-- ... -@
-	//-×
-	//</SF>
-		var res = [];
-		res[0] = this.getArrMIN(a);
-		res[1] = this.getArrMAX(a);
 		
-		return res;
-	};
-	
+
 	this.genDataSvg= function(t){
 	//<SF>
 	// 2018. júl. 12.<br>
@@ -1294,6 +1228,120 @@ PSTCG.CHART = function(id){
 		return svg;
 	}
 	
+	this.getOneShadeLighter=function(shdToLighten){
+	//<SF>
+	// Létrehozva: 2018. dec. 23.<br>
+	// Szerző:  Balise Pascal
+	// A bemenő hex stringben definiált szín helyette egy árnyalattal világosabbat adunk vissza.<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param shdToLighten = az árnyalat amit világosítani akarunk. -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		//<nn>
+		// Elkezdjük a visszaadott sztringet épteni, most csak a hex jelölő hashmark-ot
+		// tesszük bele.
+		//</nn>
+		var res = "#";
+
+		//<nn>
+		// A három (red/green/blue) színnek adunk három változót, amikbe be is tesszük
+		// a beérkező paraméter három értékét INT-é alakítva.
+		//</nn>
+		var r = parseInt(shdToLighten.substr(1,2),16);
+		var g = parseInt(shdToLighten.substr(3,2),16);
+		var b = parseInt(shdToLighten.substr(5,2),16);
+
+		//<nn>
+		// A színek értékeit a vikégosítás miatt megnöveljük 20-al.
+		// Hogy ne csússzunk ki a 0-255 intervallumból, Math.min()-el dolgozunk.
+		//</nn>
+		r = Math.min(255,r+20);
+		g = Math.min(255,g+20);
+		b = Math.min(255,b+20);
+
+		//<DEBUG>
+		// Megnézhetjük mik az RGB intek a bejövőben:<br>
+		// <code>
+		// console.log("r: ",r,", g:", g,", b:",b);<br/>>
+		// </code>
+		//</DEBUG>
+
+		//<nn>
+		// A megváltoztatott int értékeket visszaalakítjuk hex sztringgé.
+		//</nn>
+		res += ("0"+r.toString(16)).substr(-2);
+		res += ("0"+g.toString(16)).substr(-2);
+		res += ("0"+b.toString(16)).substr(-2);
+
+		//<nn>
+		// A kész hexa sztringet visszaadjuk, és kész.
+		//</nn>
+		return res;
+	}
+
+	this.getOneShadeDarker=function(shdToDarken){
+	//<SF>
+	// Létrehozva: 2018. dec. 23.<br>
+	// Szerző:  Balise Pascal
+	// A bemenő hex stringben definiált szín helyette egy árnyalattal világosabbat adunk vissza.<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param shdToDarken = az árnyalat amit sötétíteni akarunk. -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		
+		//<nn>
+		// Elkezdjük a visszaadott sztringet épteni, most csak a hex jelölő hashmark-ot
+		// tesszük bele.
+		//</nn>
+		var res = "#";
+
+		//<nn>
+		// A három (red/green/blue) színnek adunk három változót, amikbe be is tesszük
+		// a beérkező paraméter három értékét INT-é alakítva.
+		//</nn>
+		var r = parseInt(shdToDarken.substr(1,2),16);
+		var g = parseInt(shdToDarken.substr(3,2),16);
+		var b = parseInt(shdToDarken.substr(5,2),16);
+
+		//<nn>
+		// A színek értékeit a vikégosítás miatt megnöveljük 20-al.
+		// Hogy ne csússzunk ki a 0-255 intervallumból, Math.min()-el dolgozunk.
+		//</nn>
+		r = Math.min(255,r+20);
+		g = Math.min(255,g+20);
+		b = Math.min(255,b+20);
+
+		//<DEBUG>
+		// Megnézhetjük mik az RGB intek a bejövőben:<br>
+		// <code>
+		// console.log("r: ",r,", g:", g,", b:",b);<br/>>
+		// </code>
+		//</DEBUG>
+
+		//<nn>
+		// A megváltoztatott int értékeket visszaalakítjuk hex sztringgé.
+		//</nn>
+		res += ("0"+r.toString(16))-substr(-2);
+		res += ("0"+g.toString(16))-substr(-2);
+		res += ("0"+b.toString(16))-substr(-2);
+
+		//<nn>
+		// A kész hexa sztringet visszaadjuk, és kész.
+		//</nn>
+		return res;
+	}
+
 	this.getRndINT=function(min, max){
 	//<SF>
 	// 2018. júl. 12.<br>
@@ -1318,8 +1366,75 @@ PSTCG.CHART = function(id){
 		
 	}
 	
+	this.getArrMAX = function(a){
+		//<SF>
+		// Létrehozva: 2018. jún. 30.<br>
+		// Szerző:  Balise Pascal
+		// Egy paraméterben kapott tömb maximumát adja vissza<br>
+		// PARAMÉTEREK:
+		//×-
+		// @-- @param $a = a tömb -@
+		//-×
+		//MÓDOSÍTÁSOK:
+		//×-
+		// @-- ... -@
+		//-×
+		//</SF>
+			var mx = -Infinity, x = a.length;
+			while(x--){
+				if(a[x] > mx){
+					mx = a[x];
+				}
+			}
+			return mx;
+		};
+		
+	this.getArrMIN = function(a){
+	//<SF>
+	// Létrehozva: 2018. jún. 30.<br>
+	// Szerző:  Balise Pascal
+	// Egy paraméterben kapott tömb maximumát adja vissza<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param $a = a tömb -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		var mi = Infinity, x = a.length;
+		//mi = Math.min(...$a);*/
+		while(x--){
+			if(arr[x] < mi){
+				mi = arr[x];
+			}
+		}
+		return mi;
+	};
 	
+	this.getExtnt = function(a){
+	//<SF>
+	// Létrehozva: 2018. jún. 30.<br>
+	// Szerző:  Balise Pascal
+	// LEÍRÁS<br>
+	// PARAMÉTEREK:
+	//×-
+	// @-- @param ... = ... -@
+	//-×
+	//MÓDOSÍTÁSOK:
+	//×-
+	// @-- ... -@
+	//-×
+	//</SF>
+		var res = [];
+		res[0] = this.getArrMIN(a);
+		res[1] = this.getArrMAX(a);
+		
+		return res;
+	};
 	
+
 	
 	this.test001 = function(col0, col1){
 	//<SF>
