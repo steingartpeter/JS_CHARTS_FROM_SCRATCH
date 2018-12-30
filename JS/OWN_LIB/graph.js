@@ -53,9 +53,6 @@ PSTCG.CHART = function(id){
 		vals01:[180,450,610,500,750,422,880,950]
 	};
 	
-	
-	
-	
 	//<nn>
 	// Az alapértelmezett = DEFAULT értékeket tartalmazó objektum.
 	//</nn>
@@ -167,7 +164,7 @@ PSTCG.CHART = function(id){
 				chrtMrgR:80,
 				chrtBGRectDims: [640,608],	
 			};
-		}
+	}
 	
 	
 	//<nn>
@@ -188,7 +185,6 @@ PSTCG.CHART = function(id){
 		height:this.DIMS.chrtBGRectDims[1],
 		fill:'url:linGrd001'
 	};
-	
 	
 	
 	//<nn>
@@ -1179,7 +1175,7 @@ PSTCG.CHART = function(id){
 	// Az adatokhoz tartozó grafikus elemek legenerálása<br>
 	// PARAMÉTEREK:
 	//×-
-	// @-- @param ... = ... -@
+	// @-- @param t = a grafikonobjektumok tipusa, alapértelmezésben BAR. -@
 	//-×
 	//MÓDOSÍTÁSOK:
 	//×-
@@ -1211,14 +1207,25 @@ PSTCG.CHART = function(id){
 					data:this.DATA.vals01[ix1]
 				});
 				r.mouseenter(function(event){
-					var hvDiv = $(document.createElement('div'));
 					var d = $(this);
+					d.attr({
+						"stroke":"#4411AA",
+						"stroke-width":"2px",
+						"fill":self.getOneShadeDarker(d.attr("fill"))
+					});
+					var hvDiv = $(document.createElement('div'));
+					
 					hvDiv.html("<p>"+d.attr("data")+"</p>");
 					hvDiv.addClass("floatDataDiv");
 					hvDiv.css({'top':event.pageY-50,'left':event.pageX});
 					$("body").append(hvDiv);
 				});
 				r.mouseout(function(){
+					var b = $(this);
+					b.attr({
+						"stroke":"none",
+						"fill":self.getOneShadeLighter(b.attr("fill"))
+					});
 					$(".floatDataDiv").remove();
 				});
 				svg.push(r);
@@ -1318,9 +1325,9 @@ PSTCG.CHART = function(id){
 		// A színek értékeit a vikégosítás miatt megnöveljük 20-al.
 		// Hogy ne csússzunk ki a 0-255 intervallumból, Math.min()-el dolgozunk.
 		//</nn>
-		r = Math.min(255,r+20);
-		g = Math.min(255,g+20);
-		b = Math.min(255,b+20);
+		r = Math.max(0,r-20);
+		g = Math.max(0,g-20);
+		b = Math.max(0,b-20);
 
 		//<DEBUG>
 		// Megnézhetjük mik az RGB intek a bejövőben:<br>
@@ -1332,9 +1339,9 @@ PSTCG.CHART = function(id){
 		//<nn>
 		// A megváltoztatott int értékeket visszaalakítjuk hex sztringgé.
 		//</nn>
-		res += ("0"+r.toString(16))-substr(-2);
-		res += ("0"+g.toString(16))-substr(-2);
-		res += ("0"+b.toString(16))-substr(-2);
+		res += ("0"+r.toString(16)).substr(-2);
+		res += ("0"+g.toString(16)).substr(-2);
+		res += ("0"+b.toString(16)).substr(-2);
 
 		//<nn>
 		// A kész hexa sztringet visszaadjuk, és kész.

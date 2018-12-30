@@ -208,7 +208,37 @@
 						</ol>
 					</li>
 					<!--  END OF FUNCS -->
-					
+					<!--  HELPER FUNCS -->
+					<li>
+						<h3 class="doc-closer" onCLick="closeNextOL(this)">SEGÉD FÜGGVÉNYEK</h3><br>
+						<p class="docm"> A működéshez, és főképp annak moduláris felosztásához szükséges, hogy a funkcionalitához
+							lazán kötődő funkciókat is megvalósítsuk, egy-egy külön függvényben.<br>Szinte minden projektben kell egy 
+							véletlen szám generátor, amit aztán érdemes min-max paraméterekkel ellátni. Erre aztán jellemzően épülhet
+							egy véletlen szín generátor, stb.
+						</p>
+						<ol>
+							<li>
+								<h4>genDataSvg:</h4>
+								<p class="docm">Ez a függvény nem is igazán HELPER tipus, ez geerálja le a grafikon elmeit egy SVG group-ba.
+								Egy paramétert kap (t), ami a grafikon tipusát jelzi. Amennyiben nem küldünk paramétert, akkor automatikusan beállítjuk
+								azt BAR(oszlopdiagramm)-ra.</p>
+							</li>
+							<li>
+								<h4>getOneShadeLighter:</h4>
+								<p class="docm">Ez a függvény a mouseenter esemény során segít, hogy kissé interaktívabbá tegye a chart-ot.
+									A szerepe az, hogy a paraméterként kapott hexa sztring által reprzezentált színből egy árnyalattal 
+									világosabbat adjon vissza, szintén hexa sztringként.<br/>
+									A működése, nem túl nehézkes:<br/>
+									- a hexa sztringet 3 decimális számmá alakítjuk<br/>
+									- a három decimális számot 20-al növeljük, vagy ha az nagyobb 255-nél, akkor 255-re állítjuk<br/>
+									- a három decmiális számot hexává alakítjuk, majd 2 jegy hosszan egy sztringe összesítjük<br/>
+									- az új hexa szín sztringet visszaadjuk<br/>
+								</p>
+							</li>
+						
+						</ol>
+					</li>
+
 					</ol>
 				</li>
 			</ol>
