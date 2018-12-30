@@ -1149,7 +1149,8 @@ PSTCG.CHART = function(id){
 		//</nn>
 		var dataGrp = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
 		dataGrp.attr({id:"chart-data"});
-		var svgDrw = this.genDataSvg(this.DATA_META.typ);
+		//var svgDrw = this.genDataSvg(this.DATA_META.typ);
+		var svgDrw = this.genDataSvg('line');
 		console.log("svgDrw:");
 		console.log(svgDrw);
 		dataGrp.append(svgDrw);
@@ -1190,12 +1191,16 @@ PSTCG.CHART = function(id){
 			t = "BAR";
 		}
 		
-		
-		if(t == "BAR"){
-			var svg = [];
+		var svg = [];
+		if(t.toUpperCase() == "BAR"){
+			
 			var barWidth = 0.75*(this.DIMS.svgW - this.DIMS.chrtMrgR-this.DIMS.chrtMrgR) / (this.DATA.vals01.length+1);
 			
 			for(var ix1=0; ix1 < this.DATA.vals01.length; ix1++){
+				//<nn>
+				// Egy rect lesz minden egyes adatelemet ábárzoló "BAR".
+				// A gy váltzóba tesszük a BAR-t, majd beállítjuk a tulajdonságait egyeneként.
+				//</nn>
 				var r = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'rect'));
 				r.attr({
 					id:"bar-" + ("0"+ix1).substring(-2),
@@ -1206,6 +1211,10 @@ PSTCG.CHART = function(id){
 					height:this.FUNCS.yScl01.getVal(this.DATA.vals01[ix1]),
 					data:this.DATA.vals01[ix1]
 				});
+				//<nn>
+				// Az interaktivitás biztosításához, a mouseneter, és mouseleave eseményekhez
+				// egy-egy eseménykezelő függvényt adunk.
+				//</nn>
 				r.mouseenter(function(event){
 					var d = $(this);
 					d.attr({
@@ -1230,6 +1239,89 @@ PSTCG.CHART = function(id){
 				});
 				svg.push(r);
 			}
+		}else if(t.toUpperCase() == 'LINE') {
+			//<nn>
+			// A vonalat egy path eleme fogja reprzenetálni. ennek legfontosabb
+			// része a "d" tulajonsága, ami a path által érintett pontok koordinátáit
+			// írja le. Ez megjelenését tekintve egy string.
+			//</nn>
+			var d = "M";
+			var dataDscrptr = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g')); 
+			var p = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'path'));
+			for(var ix1=0; ix1 < this.DATA.vals01.length; ix1++){
+				var mrkr = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'circle'));
+				var ccx = this.FUNCS.xScl01.getVal(ix1+1)+this.DIMS.chrtMrgL;
+				var ccy = this.DIMS.svgH - this.FUNCS.yScl01.getVal(this.DATA.vals01[ix1])-this.DIMS.chrtMrgB; 
+				
+				//<nn>
+				// Ha ez az es lépés, akkor a path-ot csak mougatjuk, nem vnalazzukű
+				// ha már nem az első, akkor vonalat kell húzni (M/L).
+				//</nn>
+				if(ix1<1){
+					d += ccx + " " + ccy;
+				}else{
+					d += " L" + ccx + " " + ccy;
+				}
+
+				mrkr.attr({
+					id:"dtMrkr-" + ("0"+ix1).substring(-2),
+					fill:this.DATA_META.fill,
+					cx:ccx,
+					cy:ccy,
+					r:"5",
+					data:this.DATA.vals01[ix1]
+				});
+				mrkr.mouseenter(function(event){
+					var d = $(this);
+					d.attr({
+						"stroke":"#4411AA",
+						"stroke-width":"1px",
+						"fill":self.getOneShadeDarker(d.attr("fill")),
+						"r":d.attr("r")*1.5
+					});
+					var hvDiv = $(document.createElement('div'));
+					
+					hvDiv.html("<p>"+d.attr("data")+"</p>");
+					hvDiv.addClass("floatDataDiv");
+					hvDiv.css({'top':event.pageY-50,'left':event.pageX});
+					$("body").append(hvDiv);
+				});
+				mrkr.mouseout(function(){
+					var b = $(this);
+					b.attr({
+						"stroke":"none",
+						"fill":self.getOneShadeLighter(b.attr("fill")),
+						"r":"5"
+					});
+					$(".floatDataDiv").remove();
+				});
+				//<nn>
+				// Az aktuális adatjelölőt az adatjelölő GROUPhoz adjuk.
+				//</nn>
+				dataDscrptr.append(mrkr);
+			}
+			//<nn>
+			// Ha megvan az adatvonlaat leíró PATH elemünk "d" tulajdonsága, akkor a 
+			// többi tulajdonságot is beállítjuk.
+			//</nn>
+			p.attr({
+				"id":"data-path",
+				"d":d,
+				"fill":"none",
+				"stroke":"#050505",
+				"stroke-width":"3"
+			});
+			//<nn>
+			// Minden beállítva, az svg gyűjteménhez adjuk a PATH elemet is.
+			//</nn>
+			svg.push(p);
+			//<nn>
+			// A legfelső elemként betesszük az adatjelőlőket.
+			//</nn>
+			svg.push(dataDscrptr);
+		}else{
+			window.alert("Ismeretlen diagramm tipus: ", t.toUpperCase());
+			return "";
 		}
 		
 		return svg;
