@@ -330,7 +330,7 @@ PSTCG.CHART = function(id){
 		drwPoints:false,
 		dataPoint:{
 			shape:"dot",
-			size:"3px",
+			size:"5px",
 			fill:"#FFAA22",
 			"stroke-width":"1px",
 			stroke:"#050505",
@@ -1149,8 +1149,10 @@ PSTCG.CHART = function(id){
 		//</nn>
 		var dataGrp = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g'));
 		dataGrp.attr({id:"chart-data"});
-		//var svgDrw = this.genDataSvg(this.DATA_META.typ);
-		var svgDrw = this.genDataSvg('line');
+		this.DATA_META.typ = 'line';
+		//this.DATA_META.typ = 'bar';
+		var svgDrw = this.genDataSvg(this.DATA_META.typ);
+		//var svgDrw = this.genDataSvg('line');
 		console.log("svgDrw:");
 		console.log(svgDrw);
 		dataGrp.append(svgDrw);
@@ -1190,16 +1192,23 @@ PSTCG.CHART = function(id){
 		if(t === undefined){
 			t = "BAR";
 		}
-		
+		//<nn>
+		// Készítünk egy egyszerű tömböt az SVG elemeknek, amiket majd visszaadunk, és a grafikon
+		// győkér SVG eelméhez adunk.
+		//</nn>
 		var svg = [];
-		if(t.toUpperCase() == "BAR"){
-			
+
+		//<nn>
+		// A paraméterben kapott tipusszrtingnek megfelelően generáljuk le az
+		// adat-leíró grafikus elemeket.
+		// - az első eset az egyszerű oszlopdiagramm.
+		//</nn>
+		if(t.toUpperCase() == "BAR"){	
 			var barWidth = 0.75*(this.DIMS.svgW - this.DIMS.chrtMrgR-this.DIMS.chrtMrgR) / (this.DATA.vals01.length+1);
-			
 			for(var ix1=0; ix1 < this.DATA.vals01.length; ix1++){
 				//<nn>
 				// Egy rect lesz minden egyes adatelemet ábárzoló "BAR".
-				// A gy váltzóba tesszük a BAR-t, majd beállítjuk a tulajdonságait egyeneként.
+				// A egy váltzóba tesszük a BAR-t, majd beállítjuk a tulajdonságait egyeneként.
 				//</nn>
 				var r = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'rect'));
 				r.attr({
@@ -1237,6 +1246,9 @@ PSTCG.CHART = function(id){
 					});
 					$(".floatDataDiv").remove();
 				});
+				//<nn>
+				// Minden egyes elkészült RECT elemet az SVG tömbbe teszünk.
+				//</nn>
 				svg.push(r);
 			}
 		}else if(t.toUpperCase() == 'LINE') {
@@ -1248,6 +1260,13 @@ PSTCG.CHART = function(id){
 			var d = "M";
 			var dataDscrptr = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'g')); 
 			var p = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'path'));
+			//<nn>
+			// Egy FOr ciklussal végigmegyünk az adat tömbbön, és:
+			//×-
+			// @-- kiszámoljuk az adatből következő középpontot az adatjelölőhöz -@
+			// @-- a path LINE TO elemét hozzáadjuk a path D eleméhez -@
+			//-×
+			//</nn>
 			for(var ix1=0; ix1 < this.DATA.vals01.length; ix1++){
 				var mrkr = $(document.createElementNS(PSTCG_CNSTS.SVGNS, 'circle'));
 				var ccx = this.FUNCS.xScl01.getVal(ix1+1)+this.DIMS.chrtMrgL;
@@ -1264,12 +1283,13 @@ PSTCG.CHART = function(id){
 				}
 
 				mrkr.attr({
-					id:"dtMrkr-" + ("0"+ix1).substring(-2),
-					fill:this.DATA_META.fill,
-					cx:ccx,
-					cy:ccy,
-					r:"5",
-					data:this.DATA.vals01[ix1]
+					"id":"dtMrkr-" + ("0"+ix1).substring(-2),
+					"fill":this.DATA_META.dataPoint.fill,
+					"cx":ccx,
+					"cy":ccy,
+					"r":this.DATA_META.dataPoint.size,
+					"data":this.DATA.vals01[ix1],
+					'opacity':'.25'
 				});
 				mrkr.mouseenter(function(event){
 					var d = $(this);
@@ -1277,7 +1297,8 @@ PSTCG.CHART = function(id){
 						"stroke":"#4411AA",
 						"stroke-width":"1px",
 						"fill":self.getOneShadeDarker(d.attr("fill")),
-						"r":d.attr("r")*1.5
+						"r":d.attr("r")*1.5,
+						"opacity":1
 					});
 					var hvDiv = $(document.createElement('div'));
 					
@@ -1291,7 +1312,8 @@ PSTCG.CHART = function(id){
 					b.attr({
 						"stroke":"none",
 						"fill":self.getOneShadeLighter(b.attr("fill")),
-						"r":"5"
+						"r":"5",
+						"opacity":".25"
 					});
 					$(".floatDataDiv").remove();
 				});
@@ -1575,5 +1597,3 @@ PSTCG.CHART = function(id){
 
 
 
-
-;
